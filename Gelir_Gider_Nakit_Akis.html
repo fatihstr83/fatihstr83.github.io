@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gelir – Gider & Nakit Akış Paneli</title>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<style>
+  :root {
+    --navy: #1F4E79;
+    --green: #548235;
+    --red: #C00000;
+    --yellow: #FFF2CC;
+    --light-green: #E2EFDA;
+    --light-red: #FCE4D6;
+    --blue-text: #0000FF;
+    --gray: #666666;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f2f5;
+    color: #222;
+    padding: 16px;
+  }
+  .header {
+    background: linear-gradient(135deg, #1F4E79, #2E75B6);
+    color: white;
+    padding: 20px 24px;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header h1 { font-size: 1.4rem; font-weight: 700; }
+  .header p { font-size: 0.85rem; opacity: 0.9; margin-top: 4px; }
+  .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+  .btn-export {
+    background: #28a745;
+    color: white;
+  }
+  .btn-export:hover { background: #218838; }
+  .btn-reset {
+    background: #ffc107;
+    color: #333;
+  }
+  .btn-reset:hover { background: #e0a800; }
+  .tabs {
+    display: flex;
+    background: white;
+    border-bottom: 2px solid #dee2e6;
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 14px 22px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .tab:hover { background: #f8f9fa; color: var(--navy); }
+  .tab.active {
+    color: var(--navy);
+    border-bottom-color: var(--navy);
+    background: #e8f0fe;
+  }
+  .panel {
+    display: none;
+    background: white;
+    padding: 20px;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    overflow-x: auto;
+  }
+  .panel.active { display: block; }
+  .year-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .year-row label { font-weight: 700; color: var(--navy); }
+  .year-row input {
+    width: 100px;
+    padding: 8px 12px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    background: var(--yellow);
+    color: var(--blue-text);
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 900px;
+    font-size: 0.82rem;
+  }
+  th, td {
+    border: 1px solid #c0c0c0;
+    padding: 6px 8px;
+    text-align: right;
+  }
+  th {
+    background: var(--navy);
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  td:first-child, th:first-child {
+    text-align: left;
+    min-width: 200px;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: white;
+  }
+  th:first-child { background: var(--navy); z-index: 3; }
+  .input-cell {
+    background: var(--yellow) !important;
+    color: var(--blue-text);
+    font-weight: 600;
+  }
+  .input-cell input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--blue-text);
+    font-weight: 600;
+    text-align: right;
+    font-size: inherit;
+    outline: none;
+    padding: 2px;
+  }
+  .total-gelir { background: var(--green) !important; color: white !important; font-weight: 700; }
+  .total-gelir td:first-child { background: var(--green) !important; color: white !important; }
+  .total-gider { background: var(--red) !important; color: white !important; font-weight: 700; }
+  .total-gider td:first-child { background: var(--red) !important; color: white !important; }
+  .row-gelir-total { background: var(--light-green); color: #006600; font-weight: 600; }
+  .row-gelir-total td:first-child { background: var(--green); color: white; }
+  .row-gider-total { background: var(--light-red); color: var(--red); font-weight: 600; }
+  .row-gider-total td:first-child { background: var(--red); color: white; }
+  .row-net { background: #D6DCE4; font-weight: 700; }
+  .row-net td:first-child { background: #5B9BD5; color: white; }
+  .row-kum { background: #FFF2CC; font-weight: 600; }
+  .row-kum td:first-child { background: #BF8F00; color: white; }
+  .neg { color: #c00000 !important; }
+  .pos { color: #006600 !important; }
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .card {
+    padding: 16px;
+    border-radius: 10px;
+    color: white;
+  }
+  .card h3 { font-size: 0.8rem; opacity: 0.9; margin-bottom: 6px; }
+  .card .val { font-size: 1.4rem; font-weight: 700; }
+  .card-gelir { background: linear-gradient(135deg, #548235, #70AD47); }
+  .card-gider { background: linear-gradient(135deg, #C00000, #E74C3C); }
+  .card-net { background: linear-gradient(135deg, #5B9BD5, #2E75B6); }
+  .card-oran { background: linear-gradient(135deg, #BF8F00, #D4A017); }
+  .note {
+    margin-top: 12px;
+    font-size: 0.8rem;
+    color: var(--gray);
+  }
+  @media (max-width: 768px) {
+    .header h1 { font-size: 1.1rem; }
+    table { font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1>💰 Gelir – Gider & Nakit Akış Paneli</h1>
+      <p>Sarı hücrelere tutar girin • Özet ve nakit akış otomatik güncellenir</p>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-export" onclick="exportExcel()">📥 Excel Olarak Kaydet</button>
+      <button class="btn btn-reset" onclick="if(confirm('Tüm veriler sıfırlansın mı?')) location.reload()">🔄 Sıfırla</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="ozet">📊 Özet & Nakit Akış</div>
+    <div class="tab" data-tab="gelirler">📈 Gelirler</div>
+    <div class="tab" data-tab="giderler">📉 Giderler</div>
+  </div>
+
+  <div id="ozet" class="panel active">
+    <div class="year-row">
+      <label>Yıl:</label>
+      <input type="number" id="yil" value="2026" onchange="calc()">
+    </div>
+    <div class="summary-cards">
+      <div class="card card-gelir"><h3>Yıllık Toplam Gelir</h3><div class="val" id="s-gelir">0</div></div>
+      <div class="card card-gider"><h3>Yıllık Toplam Gider</h3><div class="val" id="s-gider">0</div></div>
+      <div class="card card-net"><h3>Yıllık Net</h3><div class="val" id="s-net">0</div></div>
+      <div class="card card-oran"><h3>Tasarruf Oranı</h3><div class="val" id="s-oran">0%</div></div>
+    </div>
+    <table id="ozet-table">
+      <thead>
+        <tr>
+          <th>Kalem</th>
+          <th>Ocak</th><th>Şubat</th><th>Mart</th><th>Nisan</th><th>Mayıs</th><th>Haziran</th>
+          <th>Temmuz</th><th>Ağustos</th><th>Eylül</th><th>Ekim</th><th>Kasım</th><th>Aralık</th>
+          <th>YILLIK TOPLAM</th>
+        </tr>
+      </thead>
+      <tbody id="ozet-body"></tbody>
+    </table>
+    <p class="note">Not: Gelir ve gider tutarlarını «Gelirler» ve «Giderler» sekmelerinden girin. Bu sayfa otomatik hesaplanır.</p>
+  </div>
+
+  <div id="gelirler" class="panel">
+    <table id="gelir-table">
+      <thead>
+        <tr>
+          <th>Kategori / Kalem</th>
+          <th>Ocak</th><th>Şubat</th><th>Mart</th><th>Nisan</th><th>Mayıs</th><th>Haziran</th>
+          <th>Temmuz</th><th>Ağustos</th><th>Eylül</th><th>Ekim</th><th>Kasım</th><th>Aralık</th>
+          <th>Toplam</th>
+        </tr>
+      </thead>
+      <tbody id="gelir-body"></tbody>
+    </table>
+  </div>
+
+  <div id="giderler" class="panel">
+    <table id="gider-table">
+      <thead>
+        <tr>
+          <th>Kategori / Kalem</th>
+          <th>Ocak</th><th>Şubat</th><th>Mart</th><th>Nisan</th><th>Mayıs</th><th>Haziran</th>
+          <th>Temmuz</th><th>Ağustos</th><th>Eylül</th><th>Ekim</th><th>Kasım</th><th>Aralık</th>
+          <th>Toplam</th>
+        </tr>
+      </thead>
+      <tbody id="gider-body"></tbody>
+    </table>
+  </div>
+
+<script>
+const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+
+const GELIR_KALEMLERI = [
+  "Maaş / Ücret","Ek Mesai / Prim","Serbest Meslek / Freelance","Şirket Kâr Payı / Temettü",
+  "Kira Geliri","Faiz / Mevduat Getirisi","Yatırım Geliri (Hisse, Fon)","Kripto / Dijital Varlık",
+  "Emekli Maaşı / Sosyal Yardım","Nafaka / Destek","Hediye / Miras","İkinci İş / Yan Gelir",
+  "Satış Geliri (ürün/hizmet)","Komisyon / Acente","Burs / Eğitim Desteği","Sigorta Tazminatı",
+  "Vergi İadesi","Diğer Gelir 1","Diğer Gelir 2","Diğer Gelir 3","Diğer Gelir 4","Diğer Gelir 5"
+];
+
+const GIDER_KALEMLERI = [
+  "Kira / Konut Kredisi Taksiti","Aidat / Site Yönetimi","Elektrik","Su","Doğalgaz / Isınma",
+  "İnternet / Telefon / TV","Market / Gıda","Yemek / Restoran / Cafe","Ulaşım / Akaryakıt / Toplu Taşıma",
+  "Araç Bakım / Tamir / Otopark","Taşıt Kredisi / Kasko / Trafik Sig.","Sağlık / İlaç / Muayene",
+  "Sağlık Sigortası / GSS","Eğitim / Kurs / Okul","Çocuk Bakımı / Kreş","Giyim / Ayakkabı",
+  "Kişisel Bakım / Kuaför","Eğlence / Sinema / Hobi","Spor / Gym / Üyelik","Tatil / Seyahat",
+  "Ev Eşyası / Dekorasyon","Teknoloji / Elektronik","Abonelikler (Netflix, Spotify vb.)",
+  "Kredi Kartı Ödemesi","İhtiyaç / Diğer Kredi Taksiti","Sigorta (Hayat, Konut vb.)",
+  "Vergi / Harç / Ceza","Bağış / Zekât / Yardım","Hediye / Doğum Günü","Evcil Hayvan",
+  "Temizlik / Çamaşır / Ev Hizmeti","Ofis / İş Giderleri","Muhasebe / Danışmanlık","POS / Komisyon Gideri",
+  "Diğer Gider 1","Diğer Gider 2","Diğer Gider 3","Diğer Gider 4","Diğer Gider 5",
+  "Ek Hesap (KMH) Ödemesi","BES Ödemesi"
+];
+
+// Default data from original Excel
+const DEFAULT_GELIR = [
+  [78000,78000,78000,78000,78000,78000,72000,72000,72000,72000,68000,68000],
+  ...Array(21).fill([0,0,0,0,0,0,0,0,0,0,0,0])
+];
+
+const DEFAULT_GIDER = [
+  [12000,12000,12000,12000,12000,12000,12000,12000,12000,12000,12000,12000],
+  [100,100,100,100,100,100,100,100,100,100,100,100],
+  [450,450,450,450,450,450,450,550,550,550,550,550],
+  [450,450,450,450,450,450,450,550,550,550,550,550],
+  [0,0,0,0,0,0,0,0,0,0,0,0],
+  [2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500,2500],
+  [6000,6000,6000,6000,6000,6000,6000,7000,7000,7000,7000,7000],
+  [0,0,0,0,0,0,0,0,0,0,0,0],
+  [2500,2500,2500,2500,2500,2500,2500,3000,3000,3000,3000,3000],
+  [1800,1800,1800,1800,1800,1800,1800,1800,1800,1800,1800,1800],
+  ...Array(29).fill([0,0,0,0,0,0,0,0,0,0,0,0]),
+  [52000,52000,52000,52000,52000,52000,52000,52000,56000,56000,56000,56000],
+  [4000,4000,4000,4000,4000,4000,4000,4000,4000,4000,4000,4000]
+];
+
+let gelir = DEFAULT_GELIR.map(r => [...r]);
+let gider = DEFAULT_GIDER.map(r => [...r]);
+
+function fmt(n) {
+  if (n == null || isNaN(n)) return '0';
+  return Math.round(n).toLocaleString('tr-TR');
+}
+function fmtPct(n) {
+  return (n * 100).toFixed(1).replace('.', ',') + '%';
+}
+function num(v) {
+  if (v === '' || v == null) return 0;
+  return parseFloat(String(v).replace(/\./g,'').replace(',','.')) || 0;
+}
+
+function buildGelirTable() {
+  const tbody = document.getElementById('gelir-body');
+  tbody.innerHTML = '';
+  GELIR_KALEMLERI.forEach((name, i) => {
+    const tr = document.createElement('tr');
+    let html = `<td>${name}</td>`;
+    for (let m = 0; m < 12; m++) {
+      html += `<td class="input-cell"><input type="text" data-type="gelir" data-row="${i}" data-col="${m}" value="${gelir[i][m] || ''}" oninput="onInput(this)" onblur="onBlur(this)"></td>`;
+    }
+    const rowSum = gelir[i].reduce((a,b) => a + (b||0), 0);
+    html += `<td class="row-gelir-total" id="gelir-sum-${i}">${fmt(rowSum)}</td>`;
+    tr.innerHTML = html;
+    tbody.appendChild(tr);
+  });
+  // Total row
+  const tr = document.createElement('tr');
+  tr.className = 'total-gelir';
+  let html = '<td>TOPLAM GELİR</td>';
+  for (let m = 0; m < 12; m++) {
+    html += `<td id="gelir-col-${m}">0</td>`;
+  }
+  html += '<td id="gelir-grand">0</td>';
+  tr.innerHTML = html;
+  tbody.appendChild(tr);
+}
+
+function buildGiderTable() {
+  const tbody = document.getElementById('gider-body');
+  tbody.innerHTML = '';
+  GIDER_KALEMLERI.forEach((name, i) => {
+    const tr = document.createElement('tr');
+    let html = `<td>${name}</td>`;
+    for (let m = 0; m < 12; m++) {
+      html += `<td class="input-cell"><input type="text" data-type="gider" data-row="${i}" data-col="${m}" value="${gider[i][m] || ''}" oninput="onInput(this)" onblur="onBlur(this)"></td>`;
+    }
+    const rowSum = gider[i].reduce((a,b) => a + (b||0), 0);
+    html += `<td class="row-gider-total" id="gider-sum-${i}">${fmt(rowSum)}</td>`;
+    tr.innerHTML = html;
+    tbody.appendChild(tr);
+  });
+  const tr = document.createElement('tr');
+  tr.className = 'total-gider';
+  let html = '<td>TOPLAM GİDER</td>';
+  for (let m = 0; m < 12; m++) {
+    html += `<td id="gider-col-${m}">0</td>`;
+  }
+  html += '<td id="gider-grand">0</td>';
+  tr.innerHTML = html;
+  tbody.appendChild(tr);
+}
+
+function onInput(el) {
+  const type = el.dataset.type;
+  const row = +el.dataset.row;
+  const col = +el.dataset.col;
+  const v = num(el.value);
+  if (type === 'gelir') gelir[row][col] = v;
+  else gider[row][col] = v;
+  calc();
+}
+
+function onBlur(el) {
+  const type = el.dataset.type;
+  const row = +el.dataset.row;
+  const col = +el.dataset.col;
+  const v = type === 'gelir' ? gelir[row][col] : gider[row][col];
+  el.value = v || '';
+}
+
+function calc() {
+  // Column totals gelir
+  const gelirCols = Array(12).fill(0);
+  let gelirGrand = 0;
+  gelir.forEach((row, i) => {
+    const s = row.reduce((a,b) => a + (b||0), 0);
+    gelirGrand += s;
+    row.forEach((v, m) => gelirCols[m] += (v||0));
+    const el = document.getElementById('gelir-sum-' + i);
+    if (el) el.textContent = fmt(s);
+  });
+  gelirCols.forEach((v, m) => {
+    const el = document.getElementById('gelir-col-' + m);
+    if (el) el.textContent = fmt(v);
+  });
+  const gg = document.getElementById('gelir-grand');
+  if (gg) gg.textContent = fmt(gelirGrand);
+
+  // Column totals gider
+  const giderCols = Array(12).fill(0);
+  let giderGrand = 0;
+  gider.forEach((row, i) => {
+    const s = row.reduce((a,b) => a + (b||0), 0);
+    giderGrand += s;
+    row.forEach((v, m) => giderCols[m] += (v||0));
+    const el = document.getElementById('gider-sum-' + i);
+    if (el) el.textContent = fmt(s);
+  });
+  giderCols.forEach((v, m) => {
+    const el = document.getElementById('gider-col-' + m);
+    if (el) el.textContent = fmt(v);
+  });
+  const dg = document.getElementById('gider-grand');
+  if (dg) dg.textContent = fmt(giderGrand);
+
+  // Özet
+  const netCols = gelirCols.map((g, i) => g - giderCols[i]);
+  let kum = 0;
+  const kumCols = netCols.map(n => { kum += n; return kum; });
+
+  const tbody = document.getElementById('ozet-body');
+  const rows = [
+    { label: 'TOPLAM GELİR', vals: gelirCols, total: gelirGrand, cls: 'row-gelir-total' },
+    { label: 'TOPLAM GİDER', vals: giderCols, total: giderGrand, cls: 'row-gider-total' },
+    { label: 'NET NAKİT AKIŞ', vals: netCols, total: gelirGrand - giderGrand, cls: 'row-net' },
+    { label: 'KÜMÜLATİF BAKİYE', vals: kumCols, total: kumCols[11], cls: 'row-kum' }
+  ];
+  tbody.innerHTML = rows.map(r => {
+    let cells = r.vals.map(v => {
+      const c = v < 0 ? 'neg' : (v > 0 ? 'pos' : '');
+      return `<td class="${c}">${fmt(v)}</td>`;
+    }).join('');
+    const tc = r.total < 0 ? 'neg' : (r.total > 0 ? 'pos' : '');
+    return `<tr class="${r.cls}"><td>${r.label}</td>${cells}<td class="${tc}">${fmt(r.total)}</td></tr>`;
+  }).join('');
+
+  document.getElementById('s-gelir').textContent = fmt(gelirGrand) + ' ₺';
+  document.getElementById('s-gider').textContent = fmt(giderGrand) + ' ₺';
+  const net = gelirGrand - giderGrand;
+  document.getElementById('s-net').textContent = fmt(net) + ' ₺';
+  document.getElementById('s-oran').textContent = gelirGrand ? fmtPct(net / gelirGrand) : '0%';
+}
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+async function exportExcel() {
+  const yil = document.getElementById('yil').value || 2026;
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'Gelir Gider Nakit Akis Paneli';
+  const months = MONTHS;
+  const cols = ['C','D','E','F','G','H','I','J','K','L','M','N']; // month columns
+
+  // Styles
+  const navyFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F4E79' } };
+  const greenFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF548235' } };
+  const redFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFC00000' } };
+  const yellowFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF2CC' } };
+  const lightGreen = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2EFDA' } };
+  const lightRed = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFCE4D6' } };
+  const brownFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF833C0C' } };
+  const blueFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2E75B6' } };
+  const whiteFont = { bold: true, color: { argb: 'FFFFFFFF' }, name: 'Calibri', size: 11 };
+  const blueFont = { bold: true, color: { argb: 'FF0000FF' }, name: 'Calibri', size: 11 };
+  const greenFont = { bold: true, color: { argb: 'FF006600' }, name: 'Calibri', size: 11 };
+  const redFont = { bold: true, color: { argb: 'FFC00000' }, name: 'Calibri', size: 11 };
+  const titleFont = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 16 };
+  const numFmt = '#,##0';
+  const thinBorder = { top: {style:'thin',color:{argb:'FFB0B0B0'}}, left: {style:'thin',color:{argb:'FFB0B0B0'}}, bottom: {style:'thin',color:{argb:'FFB0B0B0'}}, right: {style:'thin',color:{argb:'FFB0B0B0'}} };
+
+  // ========== GELİRLER ==========
+  const wsG = wb.addWorksheet('Gelirler', { views: [{ state: 'frozen', ySplit: 3, xSplit: 1 }] });
+  wsG.getColumn(1).width = 3;
+  wsG.getColumn(2).width = 32;
+  for (let i = 3; i <= 15; i++) wsG.getColumn(i).width = 12;
+
+  wsG.mergeCells('B1:O1');
+  wsG.getCell('B1').value = '📈  GELİR KALEMLERİ (Sarı hücrelere tutar girin)';
+  wsG.getCell('B1').font = titleFont;
+
+  // Header row 3 (Excel row 3 = index matching original row 3 header, data from row 5 in original which is our row 5)
+  // Original: row3=header, row4 empty-ish, data rows 5-26, total row 27
+  // We'll use: row1 title, row2 empty, row3 header, rows 4-25 data (22 items), row 26 total
+  // To match original formulas referencing row 27, use original row numbers:
+  // row 1 title, row 2 empty, row 3 header, rows 5-26 data, row 27 total
+
+  const headerRow = wsG.getRow(3);
+  headerRow.getCell(2).value = 'Kategori / Kalem';
+  months.forEach((m, i) => headerRow.getCell(3 + i).value = m);
+  headerRow.getCell(15).value = 'Toplam';
+  for (let c = 2; c <= 15; c++) {
+    headerRow.getCell(c).fill = navyFill;
+    headerRow.getCell(c).font = whiteFont;
+    headerRow.getCell(c).alignment = { horizontal: 'center' };
+    headerRow.getCell(c).border = thinBorder;
+  }
+
+  GELIR_KALEMLERI.forEach((name, i) => {
+    const r = 5 + i; // rows 5..26
+    const row = wsG.getRow(r);
+    row.getCell(2).value = name;
+    row.getCell(2).border = thinBorder;
+    for (let m = 0; m < 12; m++) {
+      const cell = row.getCell(3 + m);
+      cell.value = gelir[i][m] || 0;
+      cell.fill = yellowFill;
+      cell.font = blueFont;
+      cell.numFmt = numFmt;
+      cell.border = thinBorder;
+    }
+    const sumCell = row.getCell(15);
+    sumCell.value = { formula: `SUM(C${r}:N${r})` };
+    sumCell.numFmt = numFmt;
+    sumCell.border = thinBorder;
+    sumCell.font = { bold: true, name: 'Calibri', size: 11 };
+  });
+
+  // Total row 27
+  const gTot = wsG.getRow(27);
+  gTot.getCell(2).value = 'TOPLAM GELİR';
+  gTot.getCell(2).fill = greenFill;
+  gTot.getCell(2).font = whiteFont;
+  gTot.getCell(2).border = thinBorder;
+  for (let m = 0; m < 12; m++) {
+    const cell = gTot.getCell(3 + m);
+    cell.value = { formula: `SUM(${cols[m]}5:${cols[m]}26)` };
+    cell.fill = greenFill;
+    cell.font = whiteFont;
+    cell.numFmt = numFmt;
+    cell.border = thinBorder;
+  }
+  gTot.getCell(15).value = { formula: 'SUM(O5:O26)' };
+  gTot.getCell(15).fill = greenFill;
+  gTot.getCell(15).font = whiteFont;
+  gTot.getCell(15).numFmt = numFmt;
+  gTot.getCell(15).border = thinBorder;
+
+  // ========== GİDERLER ==========
+  const wsD = wb.addWorksheet('Giderler', { views: [{ state: 'frozen', ySplit: 3, xSplit: 1 }] });
+  wsD.getColumn(1).width = 3;
+  wsD.getColumn(2).width = 36;
+  for (let i = 3; i <= 15; i++) wsD.getColumn(i).width = 12;
+
+  wsD.mergeCells('B1:O1');
+  wsD.getCell('B1').value = '📉  GİDER KALEMLERİ (Sarı hücrelere tutar girin)';
+  wsD.getCell('B1').font = titleFont;
+
+  const dHeader = wsD.getRow(3);
+  dHeader.getCell(2).value = 'Kategori / Kalem';
+  months.forEach((m, i) => dHeader.getCell(3 + i).value = m);
+  dHeader.getCell(15).value = 'Toplam';
+  for (let c = 2; c <= 15; c++) {
+    dHeader.getCell(c).fill = navyFill;
+    dHeader.getCell(c).font = whiteFont;
+    dHeader.getCell(c).alignment = { horizontal: 'center' };
+    dHeader.getCell(c).border = thinBorder;
+  }
+
+  // Original data rows 5-45 (41 items), total row 46
+  GIDER_KALEMLERI.forEach((name, i) => {
+    const r = 5 + i;
+    const row = wsD.getRow(r);
+    row.getCell(2).value = name;
+    row.getCell(2).border = thinBorder;
+    for (let m = 0; m < 12; m++) {
+      const cell = row.getCell(3 + m);
+      cell.value = gider[i][m] || 0;
+      cell.fill = yellowFill;
+      cell.font = blueFont;
+      cell.numFmt = numFmt;
+      cell.border = thinBorder;
+    }
+    const sumCell = row.getCell(15);
+    sumCell.value = { formula: `SUM(C${r}:N${r})` };
+    sumCell.numFmt = numFmt;
+    sumCell.border = thinBorder;
+    sumCell.font = { bold: true, name: 'Calibri', size: 11 };
+  });
+
+  const dTot = wsD.getRow(46);
+  dTot.getCell(2).value = 'TOPLAM GİDER';
+  dTot.getCell(2).fill = redFill;
+  dTot.getCell(2).font = whiteFont;
+  dTot.getCell(2).border = thinBorder;
+  for (let m = 0; m < 12; m++) {
+    const cell = dTot.getCell(3 + m);
+    cell.value = { formula: `SUM(${cols[m]}5:${cols[m]}45)` };
+    cell.fill = redFill;
+    cell.font = whiteFont;
+    cell.numFmt = numFmt;
+    cell.border = thinBorder;
+  }
+  dTot.getCell(15).value = { formula: 'SUM(O5:O45)' };
+  dTot.getCell(15).fill = redFill;
+  dTot.getCell(15).font = whiteFont;
+  dTot.getCell(15).numFmt = numFmt;
+  dTot.getCell(15).border = thinBorder;
+
+  // ========== ÖZET ==========
+  const wsO = wb.addWorksheet('Özet & Nakit Akış', { views: [{ state: 'frozen', ySplit: 7, xSplit: 2 }] });
+  wsO.getColumn(1).width = 3;
+  wsO.getColumn(2).width = 22;
+  for (let i = 3; i <= 15; i++) wsO.getColumn(i).width = 13;
+
+  wsO.mergeCells('B2:N2');
+  wsO.getCell('B2').value = '💰  GELİR – GİDER & NAKİT AKIŞ PANELİ';
+  wsO.getCell('B2').font = titleFont;
+  wsO.mergeCells('B3:N3');
+  wsO.getCell('B3').value = 'Tüm kategorileri «Gelirler» ve «Giderler» sayfalarına girin • Özet ve grafikler otomatik güncellenir';
+  wsO.getCell('B3').font = { color: { argb: 'FF666666' }, name: 'Calibri', size: 10 };
+
+  wsO.getCell('B5').value = 'Yıl';
+  wsO.getCell('B5').font = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 11 };
+  wsO.getCell('C5').value = +yil;
+  wsO.getCell('C5').fill = yellowFill;
+  wsO.getCell('C5').font = blueFont;
+
+  // Header row 7
+  const oH = wsO.getRow(7);
+  oH.getCell(2).value = 'Kalem';
+  months.forEach((m, i) => oH.getCell(3 + i).value = m);
+  oH.getCell(15).value = 'YILLIK TOPLAM';
+  for (let c = 2; c <= 15; c++) {
+    oH.getCell(c).fill = navyFill;
+    oH.getCell(c).font = whiteFont;
+    oH.getCell(c).alignment = { horizontal: 'center' };
+    oH.getCell(c).border = thinBorder;
+  }
+
+  // Row 8 TOPLAM GELİR - formulas linking to Gelirler!C27 etc
+  const r8 = wsO.getRow(8);
+  r8.getCell(2).value = 'TOPLAM GELİR';
+  r8.getCell(2).fill = greenFill;
+  r8.getCell(2).font = whiteFont;
+  r8.getCell(2).border = thinBorder;
+  for (let m = 0; m < 12; m++) {
+    const cell = r8.getCell(3 + m);
+    cell.value = { formula: `Gelirler!${cols[m]}27` };
+    cell.fill = lightGreen;
+    cell.font = greenFont;
+    cell.numFmt = numFmt;
+    cell.border = thinBorder;
+  }
+  r8.getCell(15).value = { formula: 'SUM(C8:N8)' };
+  r8.getCell(15).fill = greenFill;
+  r8.getCell(15).font = whiteFont;
+  r8.getCell(15).numFmt = numFmt;
+  r8.getCell(15).border = thinBorder;
+
+  // Row 9 TOPLAM GİDER
+  const r9 = wsO.getRow(9);
+  r9.getCell(2).value = 'TOPLAM GİDER';
+  r9.getCell(2).fill = redFill;
+  r9.getCell(2).font = whiteFont;
+  r9.getCell(2).border = thinBorder;
+  for (let m = 0; m < 12; m++) {
+    const cell = r9.getCell(3 + m);
+    cell.value = { formula: `Giderler!${cols[m]}46` };
+    cell.fill = lightRed;
+    cell.font = redFont;
+    cell.numFmt = numFmt;
+    cell.border = thinBorder;
+  }
+  r9.getCell(15).value = { formula: 'SUM(C9:N9)' };
+  r9.getCell(15).fill = redFill;
+  r9.getCell(15).font = whiteFont;
+  r9.getCell(15).numFmt = numFmt;
+  r9.getCell(15).border = thinBorder;
+
+  // Row 10 NET
+  const r10 = wsO.getRow(10);
+  r10.getCell(2).value = 'NET NAKİT AKIŞ';
+  r10.getCell(2).fill = brownFill;
+  r10.getCell(2).font = whiteFont;
+  r10.getCell(2).border = thinBorder;
+  for (let m = 0; m < 12; m++) {
+    const cell = r10.getCell(3 + m);
+    cell.value = { formula: `${cols[m]}8-${cols[m]}9` };
+    cell.font = { bold: true, name: 'Calibri', size: 11 };
+    cell.numFmt = numFmt;
+    cell.border = thinBorder;
+  }
+  r10.getCell(15).value = { formula: 'O8-O9' };
+  r10.getCell(15).font = { bold: true, name: 'Calibri', size: 11 };
+  r10.getCell(15).numFmt = numFmt;
+  r10.getCell(15).border = thinBorder;
+
+  // Row 11 KÜMÜLATİF
+  const r11 = wsO.getRow(11);
+  r11.getCell(2).value = 'KÜMÜLATİF BAKİYE';
+  r11.getCell(2).fill = blueFill;
+  r11.getCell(2).font = whiteFont;
+  r11.getCell(2).border = thinBorder;
+  r11.getCell(3).value = { formula: 'C10' };
+  r11.getCell(3).numFmt = numFmt;
+  r11.getCell(3).border = thinBorder;
+  r11.getCell(3).font = { bold: true, name: 'Calibri', size: 11 };
+  for (let m = 1; m < 12; m++) {
+    const cell = r11.getCell(3 + m);
+    cell.value = { formula: `${cols[m-1]}11+${cols[m]}10` };
+    cell.numFmt = numFmt;
+    cell.border = thinBorder;
+    cell.font = { bold: true, name: 'Calibri', size: 11 };
+  }
+  r11.getCell(15).value = { formula: 'N11' };
+  r11.getCell(15).numFmt = numFmt;
+  r11.getCell(15).border = thinBorder;
+  r11.getCell(15).font = { bold: true, name: 'Calibri', size: 11 };
+
+  // Summary
+  wsO.getCell('B13').value = 'Yıllık Toplam Gelir';
+  wsO.getCell('C13').value = { formula: 'O8' };
+  wsO.getCell('C13').numFmt = numFmt;
+  wsO.getCell('C13').font = greenFont;
+  wsO.getCell('B14').value = 'Yıllık Toplam Gider';
+  wsO.getCell('C14').value = { formula: 'O9' };
+  wsO.getCell('C14').numFmt = numFmt;
+  wsO.getCell('C14').font = redFont;
+  wsO.getCell('B15').value = 'Yıllık Net';
+  wsO.getCell('C15').value = { formula: 'O10' };
+  wsO.getCell('C15').numFmt = numFmt;
+  wsO.getCell('C15').font = { bold: true, name: 'Calibri', size: 11 };
+  wsO.getCell('B16').value = 'Tasarruf Oranı';
+  wsO.getCell('C16').value = { formula: 'IF(O8=0,0,O10/O8)' };
+  wsO.getCell('C16').numFmt = '0.0%';
+  wsO.getCell('C16').font = { bold: true, name: 'Calibri', size: 11 };
+
+  // Move Özet to first position
+  const ozetIdx = wb.worksheets.findIndex(s => s.name === 'Özet & Nakit Akış');
+  if (ozetIdx > 0) {
+    const [ozetWs] = wb.worksheets.splice(ozetIdx, 1);
+    wb.worksheets.unshift(ozetWs);
+    wb.worksheets.forEach((s, i) => { s.orderNo = i; s.id = i + 1; });
+  }
+
+  // Download
+  const buf = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Gelir_Gider_Nakit_Akis_${yil}.xlsx`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Init
+buildGelirTable();
+buildGiderTable();
+calc();
+</script>
+</body>
+</html>
