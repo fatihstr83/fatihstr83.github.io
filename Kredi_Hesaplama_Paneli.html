@@ -7,27 +7,25 @@
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <style>
   :root {
-    --navy: #1F4E79;
-    --green: #548235;
-    --red: #C00000;
-    --yellow: #FFF2CC;
-    --blue-text: #0000FF;
-    --light-blue: #D6EAF8;
-    --orange: #E67E22;
+    --navy: #1F4E79; --green: #548235; --red: #C00000; --yellow: #FFF2CC;
+    --blue-text: #0000FF; --light-blue: #D6EAF8;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #222; padding: 12px; }
   .header {
-    background: linear-gradient(135deg, #1a365d, #2b6cb0);
-    color: white; padding: 18px 22px; border-radius: 12px 12px 0 0;
-    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+    background: linear-gradient(135deg, #1a365d, #2b6cb0); color: white; padding: 18px 22px;
+    border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 10px;
   }
   .header h1 { font-size: 1.3rem; }
   .header p { font-size: 0.8rem; opacity: 0.9; margin-top: 3px; }
+  .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
   .btn {
     border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600;
-    cursor: pointer; font-size: 0.88rem; transition: all 0.2s;
+    cursor: pointer; font-size: 0.88rem; transition: all 0.2s; text-decoration: none; display: inline-block;
   }
+  .btn-home { background: #e2e8f0; color: #1F4E79; }
+  .btn-home:hover { background: #cbd5e1; }
   .btn-export { background: #28a745; color: white; }
   .btn-export:hover { background: #218838; }
   .tabs { display: flex; background: white; border-bottom: 2px solid #dee2e6; overflow-x: auto; }
@@ -42,13 +40,9 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow-x: auto;
   }
   .panel.active { display: block; }
-  .grid-2 {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
-  .box {
-    border: 1px solid #d0d7de; border-radius: 10px; padding: 16px;
-  }
+  .box { border: 1px solid #d0d7de; border-radius: 10px; padding: 16px; }
   .box h3 {
     font-size: 0.95rem; color: var(--navy); margin-bottom: 12px;
     padding-bottom: 8px; border-bottom: 2px solid #e2e8f0;
@@ -92,7 +86,10 @@
       <h1>🏦 Bireysel • Ticari • Konut Kredisi Hesaplama Paneli</h1>
       <p>Güncel BSMV & KKDF Oranları ile • Ağustos 2026</p>
     </div>
-    <button class="btn btn-export" onclick="exportExcel()">📥 Excel Olarak Kaydet</button>
+    <div class="btn-group">
+      <a class="btn btn-home" href="index.html">🏠 Ana Sayfa</a>
+      <button class="btn btn-export" onclick="exportExcel()">📥 Excel Olarak Kaydet</button>
+    </div>
   </div>
 
   <div class="tabs">
@@ -106,7 +103,6 @@
     <div class="tab" data-tab="bilgi">📖 Bilgi</div>
   </div>
 
-  <!-- KREDİ HESAPLAMA -->
   <div id="kredi" class="panel active">
     <div class="grid-2">
       <div class="box">
@@ -119,39 +115,15 @@
             <option value="Konut">Konut</option>
           </select>
         </div>
-        <div class="field">
-          <label>Kredi Tutarı (TL)</label>
-          <input type="number" id="k-tutar" class="yellow" value="250000" oninput="calcKredi()">
-        </div>
-        <div class="field">
-          <label>Vade (Ay)</label>
-          <input type="number" id="k-vade" class="yellow" value="24" min="1" max="180" oninput="calcKredi()">
-        </div>
-        <div class="field">
-          <label>Aylık Faiz Oranı (%)</label>
-          <input type="number" id="k-faiz" class="yellow" value="3.99" step="0.01" oninput="calcKredi()">
-        </div>
-        <div class="field">
-          <label>Dosya / Tahsis Masrafı (TL)</label>
-          <input type="number" id="k-masraf" class="yellow" value="0" oninput="calcKredi()">
-        </div>
+        <div class="field"><label>Kredi Tutarı (TL)</label><input type="number" id="k-tutar" class="yellow" value="250000" oninput="calcKredi()"></div>
+        <div class="field"><label>Vade (Ay)</label><input type="number" id="k-vade" class="yellow" value="24" min="1" max="180" oninput="calcKredi()"></div>
+        <div class="field"><label>Aylık Faiz Oranı (%)</label><input type="number" id="k-faiz" class="yellow" value="3.99" step="0.01" oninput="calcKredi()"></div>
+        <div class="field"><label>Dosya / Tahsis Masrafı (TL)</label><input type="number" id="k-masraf" class="yellow" value="0" oninput="calcKredi()"></div>
         <div class="section-title">📊 Uygulanan Vergi / Fon</div>
-        <div class="field">
-          <label>KKDF Oranı</label>
-          <input type="number" id="k-kkdf" class="yellow" value="0.15" step="0.01" oninput="calcKredi()">
-        </div>
-        <div class="field">
-          <label>BSMV Oranı</label>
-          <input type="number" id="k-bsmv" class="yellow" value="0.15" step="0.01" oninput="calcKredi()">
-        </div>
-        <div class="field">
-          <label>Toplam Vergi/Fon Yükü</label>
-          <div class="out" id="k-toplam-vergi">0.30</div>
-        </div>
-        <div class="field">
-          <label>Efektif Aylık Faiz</label>
-          <div class="out" id="k-efektif">0</div>
-        </div>
+        <div class="field"><label>KKDF Oranı</label><input type="number" id="k-kkdf" class="yellow" value="0.15" step="0.01" oninput="calcKredi()"></div>
+        <div class="field"><label>BSMV Oranı</label><input type="number" id="k-bsmv" class="yellow" value="0.15" step="0.01" oninput="calcKredi()"></div>
+        <div class="field"><label>Toplam Vergi/Fon Yükü</label><div class="out" id="k-toplam-vergi">0.30</div></div>
+        <div class="field"><label>Efektif Aylık Faiz</label><div class="out" id="k-efektif">0</div></div>
         <p class="hint">KKDF ve BSMV sarı hücrelerden elle değiştirilebilir. Kredi türü değişince otomatik güncellenir.</p>
       </div>
       <div class="box result">
@@ -180,7 +152,6 @@
     </table>
   </div>
 
-  <!-- ÖDEME PLANI -->
   <div id="odeme" class="panel">
     <h3 class="section-title" id="odeme-baslik">📅 Aylık Ödeme Planı (Amortisman Tablosu)</h3>
     <div style="overflow-x:auto; max-height:600px;">
@@ -195,26 +166,16 @@
         <tfoot id="odeme-foot"></tfoot>
       </table>
     </div>
-    <p class="note">Not: Hesaplama eşit taksit (annuity) yöntemine göredir. Faiz nominal oran üzerinden, taksit efektif oran ile hesaplanır (Excel formülü ile aynı).</p>
+    <p class="note">Not: Hesaplama eşit taksit (annuity) yöntemine göredir. Faiz nominal oran üzerinden hesaplanır.</p>
   </div>
 
-  <!-- POS KOMİSYON -->
   <div id="pos" class="panel">
     <div class="grid-2">
       <div class="box">
         <h3>📋 İşlem Bilgileri</h3>
-        <div class="field">
-          <label>İşlem Tutarı (TL)</label>
-          <input type="number" id="p-tutar" class="yellow" value="10326" oninput="calcPOS()">
-        </div>
-        <div class="field">
-          <label>Komisyon Oranı (%)</label>
-          <input type="number" id="p-oran" class="yellow" value="3" step="0.01" oninput="calcPOS()">
-        </div>
-        <div class="field">
-          <label>BSMV Oranı (%)</label>
-          <input type="number" id="p-bsmv" class="yellow" value="5" step="0.1" oninput="calcPOS()">
-        </div>
+        <div class="field"><label>İşlem Tutarı (TL)</label><input type="number" id="p-tutar" class="yellow" value="10326" oninput="calcPOS()"></div>
+        <div class="field"><label>Komisyon Oranı (%)</label><input type="number" id="p-oran" class="yellow" value="3" step="0.01" oninput="calcPOS()"></div>
+        <div class="field"><label>BSMV Oranı (%)</label><input type="number" id="p-bsmv" class="yellow" value="5" step="0.1" oninput="calcPOS()"></div>
         <div class="field">
           <label>BSMV komisyona dahil mi?</label>
           <select id="p-dahil" class="yellow" onchange="calcPOS()">
@@ -234,10 +195,7 @@
         </div>
         <p class="hint" id="p-onerilen">Önerilen oran: %1,79</p>
         <div class="section-title">🔄 Ters Hesap (Net X TL almak için)</div>
-        <div class="field">
-          <label>İstenen Net Tutar (TL)</label>
-          <input type="number" id="p-net-istenen" class="yellow" value="10000" oninput="calcPOS()">
-        </div>
+        <div class="field"><label>İstenen Net Tutar (TL)</label><input type="number" id="p-net-istenen" class="yellow" value="10000" oninput="calcPOS()"></div>
         <div class="field"><label>Çekilmesi Gereken Brüt</label><div class="out" id="p-brut-gerek">0</div></div>
         <div class="field"><label>Bu işlemdeki komisyon</label><div class="out" id="p-kom-ters">0</div></div>
       </div>
@@ -250,20 +208,8 @@
         <div class="field"><label>Efektif Maliyet Oranı</label><div class="out" id="p-efektif">0</div></div>
       </div>
     </div>
-    <div class="section-title">📌 Güncel POS Komisyon Oranları (2026)</div>
-    <table class="ref-table">
-      <thead><tr><th>İşlem Türü</th><th>Piyasa Bandı</th><th>Ortalama Önerilen</th></tr></thead>
-      <tbody>
-        <tr><td style="text-align:left">Tek Çekim</td><td>%1,40 – %2,20</td><td>1,79%</td></tr>
-        <tr><td style="text-align:left">3 Taksit</td><td>%2,40 – %3,50</td><td>2,85%</td></tr>
-        <tr><td style="text-align:left">6 Taksit</td><td>%3,20 – %4,50</td><td>3,65%</td></tr>
-        <tr><td style="text-align:left">9 Taksit</td><td>%4,00 – %5,50</td><td>4,45%</td></tr>
-        <tr><td style="text-align:left">12 Taksit</td><td>%4,80 – %6,50+</td><td>5,25%</td></tr>
-      </tbody>
-    </table>
   </div>
 
-  <!-- TAŞIT KREDİSİ -->
   <div id="tasit" class="panel">
     <div class="grid-2">
       <div class="box">
@@ -275,26 +221,11 @@
             <option value="Elektrikli">Elektrikli</option>
           </select>
         </div>
-        <div class="field">
-          <label>Araç Değeri (Fatura/Kasko) TL</label>
-          <input type="number" id="t-deger" class="yellow" value="800000" oninput="calcTasit()">
-        </div>
-        <div class="field">
-          <label>İstenen Kredi Tutarı (TL)</label>
-          <input type="number" id="t-tutar" class="yellow" value="500000" oninput="calcTasit()">
-        </div>
-        <div class="field">
-          <label>Vade (Ay)</label>
-          <input type="number" id="t-vade" class="yellow" value="36" oninput="calcTasit()">
-        </div>
-        <div class="field">
-          <label>Aylık Faiz Oranı (%)</label>
-          <input type="number" id="t-faiz" class="yellow" value="3.49" step="0.01" oninput="calcTasit()">
-        </div>
-        <div class="field">
-          <label>Dosya Masrafı (TL)</label>
-          <input type="number" id="t-masraf" class="yellow" value="0" oninput="calcTasit()">
-        </div>
+        <div class="field"><label>Araç Değeri (Fatura/Kasko) TL</label><input type="number" id="t-deger" class="yellow" value="800000" oninput="calcTasit()"></div>
+        <div class="field"><label>İstenen Kredi Tutarı (TL)</label><input type="number" id="t-tutar" class="yellow" value="500000" oninput="calcTasit()"></div>
+        <div class="field"><label>Vade (Ay)</label><input type="number" id="t-vade" class="yellow" value="36" oninput="calcTasit()"></div>
+        <div class="field"><label>Aylık Faiz Oranı (%)</label><input type="number" id="t-faiz" class="yellow" value="3.49" step="0.01" oninput="calcTasit()"></div>
+        <div class="field"><label>Dosya Masrafı (TL)</label><input type="number" id="t-masraf" class="yellow" value="0" oninput="calcTasit()"></div>
         <div class="section-title">📊 BDDK Azami Limitler (Otomatik)</div>
         <div class="field"><label>Azami Kredi Oranı (LTV)</label><div class="out" id="t-ltv">0</div></div>
         <div class="field"><label>Azami Vade (Ay)</label><div class="out" id="t-azami-vade">0</div></div>
@@ -318,25 +249,8 @@
         <div class="field"><label>Peşinat (ödenmesi gereken)</label><div class="out" id="t-pesinat">0</div></div>
       </div>
     </div>
-    <div class="section-title">📌 BDDK Taşıt Kredisi Limitleri (2025/2026)</div>
-    <table class="ref-table">
-      <thead><tr><th>Araç Değeri</th><th>Azami LTV</th><th>Azami Vade</th><th>Min Peşinat</th></tr></thead>
-      <tbody>
-        <tr><td style="text-align:left">Benzinli/Dizel ≤400.000</td><td>%70</td><td>48 ay</td><td>%30</td></tr>
-        <tr><td style="text-align:left">Benzinli/Dizel 400.001–800.000</td><td>%50</td><td>36 ay</td><td>%50</td></tr>
-        <tr><td style="text-align:left">Benzinli/Dizel 800.001–1.200.000</td><td>%30</td><td>24 ay</td><td>%70</td></tr>
-        <tr><td style="text-align:left">Benzinli/Dizel 1.200.001–2.000.000</td><td>%20</td><td>12 ay</td><td>%80</td></tr>
-        <tr><td style="text-align:left">Benzinli/Dizel >2.000.000</td><td>%0</td><td>—</td><td>%100</td></tr>
-        <tr><td style="text-align:left">Elektrikli ≤2.500.000</td><td>%70</td><td>48 ay</td><td>%30</td></tr>
-        <tr><td style="text-align:left">Elektrikli 2.500.001–5.000.000</td><td>%50</td><td>36 ay</td><td>%50</td></tr>
-        <tr><td style="text-align:left">Elektrikli 5.000.001–6.500.000</td><td>%30</td><td>24 ay</td><td>%70</td></tr>
-        <tr><td style="text-align:left">Elektrikli 6.500.001–7.500.000</td><td>%20</td><td>12 ay</td><td>%80</td></tr>
-        <tr><td style="text-align:left">Elektrikli >7.500.000</td><td>%0</td><td>—</td><td>%100</td></tr>
-      </tbody>
-    </table>
   </div>
 
-  <!-- EK HESAP KMH -->
   <div id="kmh" class="panel">
     <div class="grid-2">
       <div class="box">
@@ -370,10 +284,8 @@
         <div class="field"><label>Günlük Ortalama Maliyet</label><div class="out" id="m-gunluk">0</div></div>
       </div>
     </div>
-    <div class="info-box">Bankalar genellikle 30 gün esası kullanır (aylık oran / 30). Bireysel: KKDF %15 + BSMV %15 | Ticari: KKDF %0 + BSMV %5.</div>
   </div>
 
-  <!-- MEVDUAT -->
   <div id="mevduat" class="panel">
     <div class="grid-2">
       <div class="box">
@@ -390,9 +302,9 @@
           </select>
         </div>
         <div class="section-title">📊 Stopaj</div>
-        <div class="field"><label>Stopaj Oranı (otomatik)</label><div class="out" id="d-stopaj-oto">0.175</div></div>
-        <div class="field"><label>Manuel Stopaj (opsiyonel)</label><input type="number" id="d-stopaj-man" class="yellow" value="" step="0.001" placeholder="Boş = otomatik" oninput="calcMevduat()"></div>
-        <div class="field"><label>Uygulanan Stopaj</label><div class="out" id="d-stopaj">0</div></div>
+        <div class="field"><label>Stopaj Oranı (otomatik)</label><div class="out" id="d-stopaj-oto">%17,5</div></div>
+        <div class="field"><label>Manuel Stopaj (opsiyonel)</label><input type="number" id="d-stopaj-man" class="yellow" value="" step="0.001" placeholder="Boş = otomatik (örn. 0.175)" oninput="calcMevduat()"></div>
+        <div class="field"><label>Uygulanan Stopaj</label><div class="out" id="d-stopaj">%17,5</div></div>
       </div>
       <div class="box result">
         <h3>✅ Getiri Sonuçları</h3>
@@ -404,91 +316,44 @@
         <div class="field"><label>Brüt Yıllık Getiri Oranı</label><div class="out" id="d-brut-yillik">0</div></div>
       </div>
     </div>
-    <div class="section-title">📌 Stopaj Oranları (2026)</div>
-    <table class="ref-table">
-      <thead><tr><th>Mevduat Türü / Vade</th><th>Stopaj</th></tr></thead>
-      <tbody>
-        <tr><td style="text-align:left">TL ≤ 6 ay (≤180 gün)</td><td>17,5%</td></tr>
-        <tr><td style="text-align:left">TL 6 ay – 1 yıl (181-365 gün)</td><td>15%</td></tr>
-        <tr><td style="text-align:left">TL 1 yıl ve üzeri (≥366 gün)</td><td>10%</td></tr>
-        <tr><td style="text-align:left">Döviz (tüm vadeler)</td><td>25%</td></tr>
-        <tr><td style="text-align:left">Altın (tüm vadeler)</td><td>15%</td></tr>
-      </tbody>
-    </table>
   </div>
 
-  <!-- BANKA ORANLARI -->
   <div id="banka" class="panel">
-    <p class="note" style="margin-bottom:12px">Oranlar kampanya, skor, tutar ve vadeye göre değişir. Kaynak: karşılaştırma siteleri & banka ilanları (Ağustos 2026 civarı).</p>
+    <p class="note" style="margin-bottom:12px">Oranlar kampanya ve skora göre değişir (yaklaşık Ağustos 2026).</p>
     <div class="section-title">📋 İhtiyaç / Bireysel Kredi (Aylık Faiz %)</div>
     <table class="ref-table">
-      <thead><tr><th>Banka</th><th>Min Faiz %</th><th>Max Faiz %</th><th>Max Vade</th><th>Not</th></tr></thead>
+      <thead><tr><th>Banka</th><th>Min %</th><th>Max %</th><th>Max Vade</th></tr></thead>
       <tbody>
-        <tr><td style="text-align:left">QNB / Finansbank</td><td>2.84</td><td>3.84</td><td>36 ay</td><td>Yeni müşteri</td></tr>
-        <tr><td style="text-align:left">Ziraat</td><td>2.99</td><td>4.19</td><td>36 ay</td><td>Maaş müşterisi</td></tr>
-        <tr><td style="text-align:left">Odeabank</td><td>2.99</td><td>3.69</td><td>36 ay</td><td>Dijital</td></tr>
-        <tr><td style="text-align:left">ING</td><td>2.99</td><td>3.54</td><td>36 ay</td><td>Yeni müşteri</td></tr>
-        <tr><td style="text-align:left">TEB</td><td>2.99</td><td>3.84</td><td>36 ay</td><td></td></tr>
-        <tr><td style="text-align:left">Enpara.com</td><td>3.39</td><td>3.79</td><td>36 ay</td><td>Masrafsız</td></tr>
-        <tr><td style="text-align:left">Akbank</td><td>3.69</td><td>4.19</td><td>36 ay</td><td></td></tr>
-        <tr><td style="text-align:left">Garanti BBVA</td><td>3.10</td><td>4.29</td><td>36 ay</td><td></td></tr>
-        <tr><td style="text-align:left">İş Bankası</td><td>3.49</td><td>4.54</td><td>36 ay</td><td></td></tr>
-        <tr><td style="text-align:left">Yapı Kredi</td><td>3.99</td><td>4.25</td><td>36 ay</td><td></td></tr>
-        <tr><td style="text-align:left">VakıfBank</td><td>2.85</td><td>4.99</td><td>36 ay</td><td>Kamu</td></tr>
-        <tr><td style="text-align:left">Halkbank</td><td>2.95</td><td>4.99</td><td>36 ay</td><td>Kamu</td></tr>
+        <tr><td style="text-align:left">QNB / Finansbank</td><td>2.84</td><td>3.84</td><td>36 ay</td></tr>
+        <tr><td style="text-align:left">Ziraat</td><td>2.99</td><td>4.19</td><td>36 ay</td></tr>
+        <tr><td style="text-align:left">ING</td><td>2.99</td><td>3.54</td><td>36 ay</td></tr>
+        <tr><td style="text-align:left">Enpara.com</td><td>3.39</td><td>3.79</td><td>36 ay</td></tr>
+        <tr><td style="text-align:left">Akbank</td><td>3.69</td><td>4.19</td><td>36 ay</td></tr>
+        <tr><td style="text-align:left">Garanti BBVA</td><td>3.10</td><td>4.29</td><td>36 ay</td></tr>
+        <tr><td style="text-align:left">İş Bankası</td><td>3.49</td><td>4.54</td><td>36 ay</td></tr>
+        <tr><td style="text-align:left">VakıfBank / Halkbank</td><td>2.85</td><td>4.99</td><td>36 ay</td></tr>
       </tbody>
     </table>
-    <div class="section-title">🏠 Konut Kredisi (Aylık Faiz %)</div>
+    <div class="section-title">🏠 Konut Kredisi</div>
     <table class="ref-table">
-      <thead><tr><th>Banka</th><th>Min Faiz %</th><th>Max Faiz %</th><th>Max Vade</th></tr></thead>
+      <thead><tr><th>Banka</th><th>Min %</th><th>Max %</th><th>Max Vade</th></tr></thead>
       <tbody>
-        <tr><td style="text-align:left">Halkbank</td><td>2.69</td><td>2.99</td><td>120 ay</td></tr>
-        <tr><td style="text-align:left">Ziraat Bankası</td><td>2.29</td><td>3.19</td><td>120 ay</td></tr>
-        <tr><td style="text-align:left">VakıfBank</td><td>2.39</td><td>2.99</td><td>120 ay</td></tr>
-        <tr><td style="text-align:left">QNB</td><td>2.49</td><td>2.99</td><td>120 ay</td></tr>
-        <tr><td style="text-align:left">İş Bankası</td><td>2.50</td><td>3.10</td><td>120 ay</td></tr>
-        <tr><td style="text-align:left">Akbank</td><td>2.79</td><td>3.60</td><td>120 ay</td></tr>
-        <tr><td style="text-align:left">Yapı Kredi</td><td>2.88</td><td>3.00</td><td>120 ay</td></tr>
-        <tr><td style="text-align:left">Garanti BBVA</td><td>3.25</td><td>3.50</td><td>120 ay</td></tr>
+        <tr><td style="text-align:left">Ziraat / Halkbank / VakıfBank</td><td>2.29</td><td>3.19</td><td>120 ay</td></tr>
+        <tr><td style="text-align:left">QNB / İş Bankası</td><td>2.49</td><td>3.10</td><td>120 ay</td></tr>
+        <tr><td style="text-align:left">Akbank / Yapı Kredi</td><td>2.79</td><td>3.60</td><td>120 ay</td></tr>
       </tbody>
     </table>
-    <div class="section-title">🚗 Taşıt Kredisi (Aylık Faiz %)</div>
-    <table class="ref-table">
-      <thead><tr><th>Banka</th><th>Min Faiz %</th><th>Max Faiz %</th><th>Max Vade</th></tr></thead>
-      <tbody>
-        <tr><td style="text-align:left">Ziraat Bankası</td><td>3.29</td><td>3.50</td><td>48 ay</td></tr>
-        <tr><td style="text-align:left">Garanti BBVA</td><td>2.85</td><td>3.64</td><td>48 ay</td></tr>
-        <tr><td style="text-align:left">Akbank</td><td>2.90</td><td>3.49</td><td>48 ay</td></tr>
-        <tr><td style="text-align:left">İş Bankası</td><td>3.30</td><td>3.65</td><td>48 ay</td></tr>
-        <tr><td style="text-align:left">QNB</td><td>3.02</td><td>4.72</td><td>48 ay</td></tr>
-        <tr><td style="text-align:left">ING</td><td>3.29</td><td>3.50</td><td>48 ay</td></tr>
-      </tbody>
-    </table>
-    <p class="note" style="margin-top:12px">⚠️ Oranlar bilgilendirme amaçlıdır, anlık değişebilir. Nihai oran bankanın skor değerlendirmesine göre belirlenir.</p>
   </div>
 
-  <!-- BİLGİ -->
   <div id="bilgi" class="panel">
-    <h3 class="section-title">📖 Kredi Hesaplama Paneli - Açıklamalar</h3>
+    <h3 class="section-title">📖 Açıklamalar</h3>
     <div class="info-box">
-      <strong>Hesaplama Yöntemi</strong><br>
-      Eşit taksitli (annuity) kredi hesaplaması kullanılır. Efektif aylık faiz oranı = Nominal aylık faiz × (1 + KKDF + BSMV).<br>
-      Aylık taksit = Kredi Tutarı × r × (1+r)^n / ((1+r)^n − 1)<br>
-      Her taksit içinde: Faiz (kalan anapara × nominal oran), KKDF, BSMV, Anapara ayrılır.
+      <strong>Hesaplama:</strong> Eşit taksit (annuity). Efektif aylık faiz = Nominal × (1 + KKDF + BSMV).<br>
+      Taksit = Tutar × r × (1+r)^n / ((1+r)^n − 1)
     </div>
     <div class="info-box">
-      <strong>Güncel Oranlar (Ağustos 2026)</strong><br>
-      • Bireysel: KKDF %15 + BSMV %15 = %30<br>
-      • Ticari: KKDF %0 + BSMV %5 = %5<br>
-      • Konut: KKDF %0 + BSMV %0 = Muaf<br>
-      Kaynak: 7 Temmuz 2023 Cumhurbaşkanı Kararı, KKDF Tebliği.
-    </div>
-    <div class="info-box">
-      <strong>Önemli Uyarılar</strong><br>
-      • Bu panel bilgilendirme amaçlıdır; bankaların nihai teklifleri skor, teminat ve masraflara göre farklılık gösterebilir.<br>
-      • Dosya/tahsis ücreti yasal üst sınır genellikle kredi tutarının binde 5'idir.<br>
-      • Hayat sigortası, ekspertiz vb. ek maliyetler dahil edilmemiştir.<br>
-      • Oranlar değişebilir; en güncel mevzuat için Resmî Gazete ve bankanızı takip ediniz.
+      <strong>Oranlar (2026):</strong> Bireysel KKDF %15 + BSMV %15 | Ticari KKDF %0 + BSMV %5 | Konut muaf.<br>
+      Bu panel bilgilendirme amaçlıdır; nihai teklif bankaya göre değişir.
     </div>
   </div>
 
@@ -497,13 +362,10 @@ function fmt(n, d=2) {
   if (n == null || isNaN(n)) return '0';
   return Number(n).toLocaleString('tr-TR', {minimumFractionDigits: d, maximumFractionDigits: d});
 }
-function fmtPct(n) {
-  return (n * 100).toFixed(2).replace('.', ',') + '%';
-}
+function fmtPct(n) { return (n * 100).toFixed(2).replace('.', ',') + '%'; }
 function val(id) { return parseFloat(document.getElementById(id).value) || 0; }
 function set(id, v, d=2) { document.getElementById(id).textContent = typeof v === 'string' ? v : fmt(v, d); }
 
-// Tabs
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -514,7 +376,6 @@ document.querySelectorAll('.tab').forEach(tab => {
   });
 });
 
-// --- KREDİ ---
 const KKDF_MAP = { Bireysel: 0.15, Ticari: 0, Konut: 0 };
 const BSMV_MAP = { Bireysel: 0.15, Ticari: 0.05, Konut: 0 };
 
@@ -525,18 +386,12 @@ function onKrediTur() {
 }
 
 function calcKredi() {
-  const tutar = val('k-tutar');
-  const vade = val('k-vade');
-  const faiz = val('k-faiz');
-  const masraf = val('k-masraf');
-  const kkdf = val('k-kkdf');
-  const bsmv = val('k-bsmv');
+  const tutar = val('k-tutar'), vade = val('k-vade'), faiz = val('k-faiz'), masraf = val('k-masraf');
+  const kkdf = val('k-kkdf'), bsmv = val('k-bsmv');
   const toplamVergi = kkdf + bsmv;
   const efektif = (faiz / 100) * (1 + toplamVergi);
-
   set('k-toplam-vergi', toplamVergi.toFixed(2));
   set('k-efektif', efektif.toFixed(5));
-
   let taksit = 0;
   if (vade > 0) {
     if (efektif === 0) taksit = tutar / vade;
@@ -545,117 +400,68 @@ function calcKredi() {
   const toplamGeri = taksit * vade + masraf;
   const faizVergi = toplamGeri - tutar - masraf;
   const faizVergisiz = toplamVergi === 0 ? faizVergi : faizVergi / (1 + toplamVergi);
-  const kkdfT = faizVergisiz * kkdf;
-  const bsmvT = faizVergisiz * bsmv;
-  const maliyet = tutar === 0 ? 0 : faizVergi / tutar;
-
-  set('k-taksit', taksit);
-  set('k-toplam', toplamGeri);
-  set('k-faiz-t', faizVergisiz);
-  set('k-kkdf-t', kkdfT);
-  set('k-bsmv-t', bsmvT);
-  set('k-faiz-vergi', faizVergi);
-  set('k-maliyet', fmtPct(maliyet));
+  set('k-taksit', taksit); set('k-toplam', toplamGeri); set('k-faiz-t', faizVergisiz);
+  set('k-kkdf-t', faizVergisiz * kkdf); set('k-bsmv-t', faizVergisiz * bsmv);
+  set('k-faiz-vergi', faizVergi); set('k-maliyet', fmtPct(tutar === 0 ? 0 : faizVergi / tutar));
 }
 
 function buildOdemePlani() {
   const tutar = val('k-tutar');
   const vade = Math.min(Math.floor(val('k-vade')), 180);
   const faizOran = val('k-faiz') / 100;
-  const kkdf = val('k-kkdf');
-  const bsmv = val('k-bsmv');
+  const kkdf = val('k-kkdf'), bsmv = val('k-bsmv');
   const efektif = faizOran * (1 + kkdf + bsmv);
   const tur = document.getElementById('k-tur').value;
-
   let taksit = 0;
   if (vade > 0) {
     if (efektif === 0) taksit = tutar / vade;
     else taksit = tutar * efektif * Math.pow(1 + efektif, vade) / (Math.pow(1 + efektif, vade) - 1);
   }
   taksit = Math.round(taksit * 100) / 100;
-
   document.getElementById('odeme-baslik').textContent =
     `📅 ${tur} Kredi  |  Tutar: ${fmt(tutar)} TL  |  Vade: ${vade} Ay  |  Aylık Faiz: %${val('k-faiz')}`;
-
-  let kalan = tutar;
-  let rows = '';
+  let kalan = tutar, rows = '';
   let totTaksit = 0, totAnapara = 0, totFaiz = 0, totKkdf = 0, totBsmv = 0;
-
-  for (let i = 1; i <= Math.max(vade, 24); i++) {
-    if (i > vade) {
-      rows += `<tr><td>${i}</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>`;
-      continue;
-    }
-    // Excel logic: first period interest on original principal with nominal rate
-    // subsequent on remaining with nominal rate
+  for (let i = 1; i <= Math.max(vade, 1); i++) {
+    if (i > vade) continue;
     const faiz = Math.round(kalan * faizOran * 100) / 100;
     const kkdfT = Math.round(faiz * kkdf * 100) / 100;
     const bsmvT = Math.round(faiz * bsmv * 100) / 100;
     let anapara = Math.round((taksit - faiz - kkdfT - bsmvT) * 100) / 100;
-    if (i === vade) anapara = Math.round(kalan * 100) / 100; // last payment adjustment
+    if (i === vade) anapara = Math.round(kalan * 100) / 100;
     kalan = Math.round(Math.max(0, kalan - anapara) * 100) / 100;
-
-    totTaksit += taksit; totAnapara += anapara; totFaiz += faiz;
-    totKkdf += kkdfT; totBsmv += bsmvT;
-
-    rows += `<tr>
-      <td>${i}</td><td>${fmt(taksit)}</td><td>${fmt(anapara)}</td><td>${fmt(faiz)}</td>
-      <td>${fmt(kkdfT)}</td><td>${fmt(bsmvT)}</td><td>${fmt(kkdfT + bsmvT)}</td><td>${fmt(kalan)}</td>
-    </tr>`;
+    totTaksit += taksit; totAnapara += anapara; totFaiz += faiz; totKkdf += kkdfT; totBsmv += bsmvT;
+    rows += `<tr><td>${i}</td><td>${fmt(taksit)}</td><td>${fmt(anapara)}</td><td>${fmt(faiz)}</td>
+      <td>${fmt(kkdfT)}</td><td>${fmt(bsmvT)}</td><td>${fmt(kkdfT + bsmvT)}</td><td>${fmt(kalan)}</td></tr>`;
   }
   document.getElementById('odeme-body').innerHTML = rows;
   document.getElementById('odeme-foot').innerHTML = `<tr style="font-weight:700;background:#e8f0fe">
     <td>TOPLAM</td><td>${fmt(totTaksit)}</td><td>${fmt(totAnapara)}</td><td>${fmt(totFaiz)}</td>
-    <td>${fmt(totKkdf)}</td><td>${fmt(totBsmv)}</td><td>${fmt(totKkdf + totBsmv)}</td><td></td>
-  </tr>`;
+    <td>${fmt(totKkdf)}</td><td>${fmt(totBsmv)}</td><td>${fmt(totKkdf + totBsmv)}</td><td></td></tr>`;
 }
 
-// --- POS ---
 const POS_ORAN = { 'Tek Çekim': 1.79, '3 Taksit': 2.85, '6 Taksit': 3.65, '9 Taksit': 4.45, '12 Taksit': 5.25 };
 function onPOSTur() {
-  const tur = document.getElementById('p-tur').value;
-  document.getElementById('p-onerilen').textContent = `Önerilen oran: %${POS_ORAN[tur]}`;
+  document.getElementById('p-onerilen').textContent = `Önerilen oran: %${POS_ORAN[document.getElementById('p-tur').value]}`;
 }
 function calcPOS() {
-  const tutar = val('p-tutar');
-  const oran = val('p-oran') / 100;
-  const bsmvOran = val('p-bsmv') / 100;
+  const tutar = val('p-tutar'), oran = val('p-oran') / 100, bsmvOran = val('p-bsmv') / 100;
   const dahil = document.getElementById('p-dahil').value === 'Evet';
-
-  let brutKom, bsmvT, toplamKom, net;
-  if (dahil) {
-    // BSMV included in commission rate
-    brutKom = tutar * oran;
-    bsmvT = 0;
-    toplamKom = brutKom;
-  } else {
-    brutKom = tutar * oran;
-    bsmvT = brutKom * bsmvOran;
-    toplamKom = brutKom + bsmvT;
-  }
-  net = tutar - toplamKom;
-  const efektif = tutar === 0 ? 0 : toplamKom / tutar;
-
-  set('p-brut', brutKom);
-  set('p-bsmv-t', bsmvT);
-  set('p-toplam', toplamKom);
-  set('p-net', net);
-  set('p-efektif', fmtPct(efektif));
-
-  // Reverse
+  const brutKom = tutar * oran;
+  const bsmvT = dahil ? 0 : brutKom * bsmvOran;
+  const toplamKom = brutKom + bsmvT;
+  set('p-brut', brutKom); set('p-bsmv-t', bsmvT); set('p-toplam', toplamKom);
+  set('p-net', tutar - toplamKom); set('p-efektif', fmtPct(tutar === 0 ? 0 : toplamKom / tutar));
   const netIstenen = val('p-net-istenen');
   let brutGerek;
-  if (dahil) {
-    brutGerek = oran >= 1 ? 0 : netIstenen / (1 - oran);
-  } else {
-    const toplamOran = oran * (1 + bsmvOran);
-    brutGerek = toplamOran >= 1 ? 0 : netIstenen / (1 - toplamOran);
+  if (dahil) brutGerek = oran >= 1 ? 0 : netIstenen / (1 - oran);
+  else {
+    const t = oran * (1 + bsmvOran);
+    brutGerek = t >= 1 ? 0 : netIstenen / (1 - t);
   }
-  set('p-brut-gerek', brutGerek);
-  set('p-kom-ters', brutGerek - netIstenen);
+  set('p-brut-gerek', brutGerek); set('p-kom-ters', brutGerek - netIstenen);
 }
 
-// --- TAŞIT ---
 function getLTV(tur, deger) {
   if (tur === 'Elektrikli') {
     if (deger <= 2500000) return { ltv: 0.7, vade: 48 };
@@ -673,28 +479,16 @@ function getLTV(tur, deger) {
 
 function calcTasit() {
   const tur = document.getElementById('t-tur').value;
-  const deger = val('t-deger');
-  const istenen = val('t-tutar');
-  const vadeIstenen = val('t-vade');
-  const faiz = val('t-faiz');
-  const masraf = val('t-masraf');
-  const kkdf = val('t-kkdf');
-  const bsmv = val('t-bsmv');
-
+  const deger = val('t-deger'), istenen = val('t-tutar'), vadeIstenen = val('t-vade');
+  const faiz = val('t-faiz'), masraf = val('t-masraf'), kkdf = val('t-kkdf'), bsmv = val('t-bsmv');
   const lim = getLTV(tur, deger);
   const azamiTutar = Math.round(deger * lim.ltv * 100) / 100;
   const kullanilabilir = Math.min(istenen, azamiTutar);
   const uygulananVade = Math.min(vadeIstenen, lim.vade || vadeIstenen);
   const efektif = (faiz / 100) * (1 + kkdf + bsmv);
-
-  set('t-ltv', lim.ltv);
-  set('t-azami-vade', lim.vade, 0);
-  set('t-azami-tutar', azamiTutar);
-  set('t-pesinat-min', deger - azamiTutar);
-  set('t-kullanilabilir', kullanilabilir);
-  set('t-uygulanan-vade', uygulananVade, 0);
-  set('t-efektif', efektif.toFixed(5));
-
+  set('t-ltv', lim.ltv); set('t-azami-vade', lim.vade, 0); set('t-azami-tutar', azamiTutar);
+  set('t-pesinat-min', deger - azamiTutar); set('t-kullanilabilir', kullanilabilir);
+  set('t-uygulanan-vade', uygulananVade, 0); set('t-efektif', efektif.toFixed(5));
   let taksit = 0;
   if (uygulananVade > 0 && kullanilabilir > 0) {
     if (efektif === 0) taksit = kullanilabilir / uygulananVade;
@@ -703,257 +497,154 @@ function calcTasit() {
   const toplamGeri = taksit * uygulananVade + masraf;
   const faizVergi = toplamGeri - kullanilabilir - masraf;
   const faizVergisiz = (kkdf + bsmv) === 0 ? faizVergi : faizVergi / (1 + kkdf + bsmv);
-
-  set('t-taksit', taksit);
-  set('t-toplam', toplamGeri);
-  set('t-faiz-vergi', faizVergi);
-  set('t-faiz-t', faizVergisiz);
-  set('t-kkdf-t', faizVergisiz * kkdf);
-  set('t-bsmv-t', faizVergisiz * bsmv);
-  set('t-pesinat', deger - kullanilabilir);
+  set('t-taksit', taksit); set('t-toplam', toplamGeri); set('t-faiz-vergi', faizVergi);
+  set('t-faiz-t', faizVergisiz); set('t-kkdf-t', faizVergisiz * kkdf);
+  set('t-bsmv-t', faizVergisiz * bsmv); set('t-pesinat', deger - kullanilabilir);
 }
 
-// --- KMH ---
 function onKMHTur() {
   const tur = document.getElementById('m-tur').value;
   document.getElementById('m-kkdf').value = tur === 'Bireysel' ? 0.15 : 0;
   document.getElementById('m-bsmv').value = tur === 'Bireysel' ? 0.15 : 0.05;
 }
 function calcKMH() {
-  const tutar = val('m-tutar');
-  const gun = val('m-gun');
-  const akdi = val('m-akdi') / 100;
-  const gecikme = val('m-gecikme') / 100;
-  const gecikmeGun = val('m-gecikme-gun');
-  const kkdf = val('m-kkdf');
-  const bsmv = val('m-bsmv');
-
+  const tutar = val('m-tutar'), gun = val('m-gun'), akdi = val('m-akdi') / 100;
+  const gecikme = val('m-gecikme') / 100, gecikmeGun = val('m-gecikme-gun');
+  const kkdf = val('m-kkdf'), bsmv = val('m-bsmv');
   const akdiFaiz = tutar * (akdi / 30) * gun;
   const gecikmeFaiz = tutar * (gecikme / 30) * gecikmeGun;
   const brut = akdiFaiz + gecikmeFaiz;
-  const kkdfT = brut * kkdf;
-  const bsmvT = brut * bsmv;
-  const vergi = kkdfT + bsmvT;
-  const toplam = brut + vergi;
-
-  set('m-akdi-f', akdiFaiz);
-  set('m-gecikme-f', gecikmeFaiz);
-  set('m-brut', brut);
-  set('m-kkdf-t', kkdfT);
-  set('m-bsmv-t', bsmvT);
-  set('m-vergi', vergi);
-  set('m-toplam', toplam);
-  set('m-geri', tutar + toplam);
-  set('m-gunluk', gun > 0 ? toplam / gun : 0);
+  const kkdfT = brut * kkdf, bsmvT = brut * bsmv, vergi = kkdfT + bsmvT, toplam = brut + vergi;
+  set('m-akdi-f', akdiFaiz); set('m-gecikme-f', gecikmeFaiz); set('m-brut', brut);
+  set('m-kkdf-t', kkdfT); set('m-bsmv-t', bsmvT); set('m-vergi', vergi);
+  set('m-toplam', toplam); set('m-geri', tutar + toplam); set('m-gunluk', gun > 0 ? toplam / gun : 0);
 }
 
-// --- MEVDUAT ---
+function fmtStopaj(r) {
+  // 0.175 → %17,5  |  0.15 → %15  |  0.25 → %25  (yuvarlama yok)
+  const p = r * 100;
+  const s = (Math.round(p * 10) / 10).toFixed(1).replace(/\.0$/, '').replace('.', ',');
+  return '%' + s;
+}
 function calcMevduat() {
-  const anapara = val('d-anapara');
-  const gun = val('d-gun');
-  const faiz = val('d-faiz') / 100;
+  const anapara = val('d-anapara'), gun = val('d-gun'), faiz = val('d-faiz') / 100;
   const pb = document.getElementById('d-pb').value;
   const manStopaj = document.getElementById('d-stopaj-man').value;
-
   let stopajOto;
   if (pb === 'Döviz') stopajOto = 0.25;
   else if (pb === 'Altın') stopajOto = 0.15;
   else if (gun <= 180) stopajOto = 0.175;
   else if (gun <= 365) stopajOto = 0.15;
   else stopajOto = 0.10;
-
-  set('d-stopaj-oto', stopajOto);
-  const stopaj = manStopaj !== '' ? parseFloat(manStopaj) : stopajOto;
-  set('d-stopaj', stopaj);
-
+  document.getElementById('d-stopaj-oto').textContent = fmtStopaj(stopajOto);
+  // Manuel alan: kullanıcı 0.175 veya 17.5 girebilir; 1'den büyükse yüzde kabul et
+  let stopaj = stopajOto;
+  if (manStopaj !== '') {
+    const m = parseFloat(manStopaj);
+    stopaj = (!isNaN(m) && m > 1) ? m / 100 : (m || stopajOto);
+  }
+  document.getElementById('d-stopaj').textContent = fmtStopaj(stopaj);
   const brut = anapara * faiz * (gun / 365);
-  const stopajT = brut * stopaj;
-  const net = brut - stopajT;
-  const bakiye = anapara + net;
-  const netYillik = anapara === 0 ? 0 : (net / anapara) * (365 / gun);
-
-  set('d-brut', brut);
-  set('d-stopaj-t', stopajT);
-  set('d-net', net);
-  set('d-bakiye', bakiye);
-  set('d-net-yillik', fmtPct(netYillik));
+  const stopajT = brut * stopaj, net = brut - stopajT;
+  set('d-brut', brut); set('d-stopaj-t', stopajT); set('d-net', net);
+  set('d-bakiye', anapara + net);
+  set('d-net-yillik', fmtPct(anapara === 0 ? 0 : (net / anapara) * (365 / gun)));
   set('d-brut-yillik', fmtPct(faiz));
 }
 
-// --- EXPORT ---
 async function exportExcel() {
   const wb = new ExcelJS.Workbook();
   wb.creator = 'Kredi Hesaplama Paneli';
-
   const yellowFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF2CC' } };
-  const navyFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F4E79' } };
   const lightBlue = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD6EAF8' } };
   const greenFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD4EDDA' } };
+  const navyFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F4E79' } };
   const blueFont = { bold: true, color: { argb: 'FF0000FF' }, name: 'Calibri', size: 11 };
   const whiteFont = { bold: true, color: { argb: 'FFFFFFFF' }, name: 'Calibri', size: 11 };
   const titleFont = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 14 };
   const numFmt = '#,##0.00';
-  const pctFmt = '0.00%';
-  const thinBorder = { top: {style:'thin',color:{argb:'FFB0B0B0'}}, left: {style:'thin',color:{argb:'FFB0B0B0'}}, bottom: {style:'thin',color:{argb:'FFB0B0B0'}}, right: {style:'thin',color:{argb:'FFB0B0B0'}} };
-
-  function styleInput(cell) {
-    cell.fill = yellowFill; cell.font = blueFont; cell.border = thinBorder;
-  }
+  const thinBorder = {
+    top: {style:'thin',color:{argb:'FFB0B0B0'}}, left: {style:'thin',color:{argb:'FFB0B0B0'}},
+    bottom: {style:'thin',color:{argb:'FFB0B0B0'}}, right: {style:'thin',color:{argb:'FFB0B0B0'}}
+  };
+  function styleInput(cell) { cell.fill = yellowFill; cell.font = blueFont; cell.border = thinBorder; }
   function styleOut(cell) {
-    cell.fill = lightBlue; cell.font = { bold: true, name: 'Calibri', size: 11 }; cell.border = thinBorder; cell.numFmt = numFmt;
+    cell.fill = lightBlue; cell.font = { bold: true, name: 'Calibri', size: 11 };
+    cell.border = thinBorder; cell.numFmt = numFmt;
   }
   function styleHeader(cell) {
-    cell.fill = navyFill; cell.font = whiteFont; cell.border = thinBorder; cell.alignment = { horizontal: 'center' };
+    cell.fill = navyFill; cell.font = whiteFont; cell.border = thinBorder;
+    cell.alignment = { horizontal: 'center' };
   }
 
-  // ========== KREDİ HESAPLAMA ==========
+  // ——— Kredi Hesaplama ———
   const wsK = wb.addWorksheet('Kredi Hesaplama');
-  wsK.getColumn(2).width = 32; wsK.getColumn(3).width = 16;
-  wsK.getColumn(4).width = 8; wsK.getColumn(5).width = 8;
-  wsK.getColumn(6).width = 24; wsK.getColumn(7).width = 16;
-
+  wsK.getColumn(2).width = 32; wsK.getColumn(3).width = 16; wsK.getColumn(6).width = 24; wsK.getColumn(7).width = 16;
   wsK.mergeCells('B2:G2');
   wsK.getCell('B2').value = '🏦  BİREYSEL • TİCARİ • KONUT KREDİSİ HESAPLAMA PANELİ';
   wsK.getCell('B2').font = titleFont;
-  wsK.mergeCells('B3:G3');
-  wsK.getCell('B3').value = 'Güncel BSMV & KKDF Oranları ile • Ağustos 2026';
-  wsK.getCell('B3').font = { color: { argb: 'FF666666' }, name: 'Calibri', size: 10 };
-
-  wsK.getCell('B5').value = '📋  KREDİ BİLGİLERİ';
-  wsK.getCell('B5').font = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 12 };
-  wsK.getCell('F5').value = '✅  HESAPLAMA SONUÇLARI';
-  wsK.getCell('F5').font = { bold: true, color: { argb: 'FF548235' }, name: 'Calibri', size: 12 };
-
-  // Inputs
+  wsK.getCell('B5').value = '📋  KREDİ BİLGİLERİ'; wsK.getCell('B5').font = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 12 };
+  wsK.getCell('F5').value = '✅  HESAPLAMA SONUÇLARI'; wsK.getCell('F5').font = { bold: true, color: { argb: 'FF548235' }, name: 'Calibri', size: 12 };
   wsK.getCell('B6').value = 'Kredi Türü'; wsK.getCell('C6').value = document.getElementById('k-tur').value; styleInput(wsK.getCell('C6'));
   wsK.getCell('B7').value = 'Kredi Tutarı (TL)'; wsK.getCell('C7').value = val('k-tutar'); styleInput(wsK.getCell('C7')); wsK.getCell('C7').numFmt = numFmt;
   wsK.getCell('B8').value = 'Vade (Ay)'; wsK.getCell('C8').value = val('k-vade'); styleInput(wsK.getCell('C8'));
   wsK.getCell('B9').value = 'Aylık Faiz Oranı (%)'; wsK.getCell('C9').value = val('k-faiz'); styleInput(wsK.getCell('C9'));
   wsK.getCell('B10').value = 'Dosya / Tahsis Masrafı (TL)'; wsK.getCell('C10').value = val('k-masraf'); styleInput(wsK.getCell('C10')); wsK.getCell('C10').numFmt = numFmt;
-
-  // Results with FORMULAS (matching original)
+  wsK.getCell('B12').value = '📊  UYGULANAN VERGİ / FON'; wsK.getCell('B12').font = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 11 };
+  wsK.getCell('B13').value = 'KKDF Oranı'; wsK.getCell('C13').value = val('k-kkdf'); styleInput(wsK.getCell('C13'));
+  wsK.getCell('B14').value = 'BSMV Oranı'; wsK.getCell('C14').value = val('k-bsmv'); styleInput(wsK.getCell('C14'));
+  wsK.getCell('B15').value = 'Toplam Vergi/Fon Yükü'; wsK.getCell('C15').value = { formula: 'C13+C14' }; styleOut(wsK.getCell('C15'));
+  wsK.getCell('B16').value = 'Efektif Aylık Faiz';
+  wsK.getCell('C16').value = { formula: 'C9/100*(1+C13+C14)' }; styleOut(wsK.getCell('C16')); wsK.getCell('C16').numFmt = '0.00000';
   wsK.getCell('F6').value = 'Aylık Taksit';
   wsK.getCell('G6').value = { formula: 'IF(C8=0,0,IF(C16=0,C7/C8,C7*C16*(1+C16)^C8/((1+C16)^C8-1)))' };
   styleOut(wsK.getCell('G6')); wsK.getCell('G6').fill = greenFill;
-
-  wsK.getCell('F7').value = 'Toplam Geri Ödeme';
-  wsK.getCell('G7').value = { formula: 'G6*C8+C10' }; styleOut(wsK.getCell('G7'));
-
-  wsK.getCell('F8').value = 'Toplam Faiz (Vergisiz)';
-  wsK.getCell('G8').value = { formula: 'IF((1+C13+C14)=0,0,G11/(1+C13+C14))' }; styleOut(wsK.getCell('G8'));
-
-  wsK.getCell('F9').value = 'Toplam KKDF';
-  wsK.getCell('G9').value = { formula: 'G8*C13' }; styleOut(wsK.getCell('G9'));
-
-  wsK.getCell('F10').value = 'Toplam BSMV';
-  wsK.getCell('G10').value = { formula: 'G8*C14' }; styleOut(wsK.getCell('G10'));
-
-  wsK.getCell('F11').value = 'Toplam Faiz + Vergi';
-  wsK.getCell('G11').value = { formula: 'G7-C7-C10' }; styleOut(wsK.getCell('G11'));
-
+  wsK.getCell('F7').value = 'Toplam Geri Ödeme'; wsK.getCell('G7').value = { formula: 'G6*C8+C10' }; styleOut(wsK.getCell('G7'));
+  wsK.getCell('F8').value = 'Toplam Faiz (Vergisiz)'; wsK.getCell('G8').value = { formula: 'IF((1+C13+C14)=0,0,G11/(1+C13+C14))' }; styleOut(wsK.getCell('G8'));
+  wsK.getCell('F9').value = 'Toplam KKDF'; wsK.getCell('G9').value = { formula: 'G8*C13' }; styleOut(wsK.getCell('G9'));
+  wsK.getCell('F10').value = 'Toplam BSMV'; wsK.getCell('G10').value = { formula: 'G8*C14' }; styleOut(wsK.getCell('G10'));
+  wsK.getCell('F11').value = 'Toplam Faiz + Vergi'; wsK.getCell('G11').value = { formula: 'G7-C7-C10' }; styleOut(wsK.getCell('G11'));
   wsK.getCell('F12').value = 'Toplam Maliyet Oranı';
-  wsK.getCell('G12').value = { formula: 'IF(C7=0,0,G11/C7)' }; styleOut(wsK.getCell('G12')); wsK.getCell('G12').numFmt = pctFmt;
-
-  // Tax rates
-  wsK.getCell('B12').value = '📊  UYGULANAN VERGİ / FON ORANLARI (Otomatik)';
-  wsK.getCell('B12').font = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 11 };
-  wsK.getCell('B13').value = 'KKDF Oranı'; wsK.getCell('C13').value = val('k-kkdf'); styleInput(wsK.getCell('C13'));
-  wsK.getCell('D13').value = 'Elle değiştirilebilir';
-  wsK.getCell('B14').value = 'BSMV Oranı'; wsK.getCell('C14').value = val('k-bsmv'); styleInput(wsK.getCell('C14'));
-  wsK.getCell('D14').value = 'Elle değiştirilebilir';
-  wsK.getCell('B15').value = 'Toplam Vergi/Fon Yükü';
-  wsK.getCell('C15').value = { formula: 'C13+C14' }; styleOut(wsK.getCell('C15'));
-  wsK.getCell('B16').value = 'Efektif Aylık Faiz';
-  wsK.getCell('C16').value = { formula: 'C9/100*(1+C13+C14)' }; styleOut(wsK.getCell('C16')); wsK.getCell('C16').numFmt = '0.00000';
-  wsK.getCell('D16').value = 'Nominal × (1 + KKDF + BSMV)';
-
-  wsK.getCell('B17').value = '💡 KKDF ve BSMV sarı hücrelerden elle değiştirilebilir. Değiştirince tüm sonuçlar ve ödeme planı otomatik yeniden hesaplanır.';
-  wsK.getCell('B17').font = { color: { argb: 'FF666666' }, name: 'Calibri', size: 9 };
-  wsK.mergeCells('B17:G17');
-
-  // Reference table
-  wsK.getCell('B20').value = '📌  2026 GÜNCEL BSMV & KKDF ORANLARI';
-  wsK.getCell('B20').font = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 11 };
-  ['Kredi Türü','KKDF','BSMV','Toplam Yük'].forEach((h,i) => { const c = wsK.getCell(21, 2+i); c.value = h; styleHeader(c); });
-  [['Bireysel (İhtiyaç/Tüketici)','15%','15%','30%'],['Ticari','0%','5%','5%'],['Konut (Konut Finansmanı)','0%','0%','0%']].forEach((row,ri) => {
-    row.forEach((v,ci) => { const c = wsK.getCell(22+ri, 2+ci); c.value = v; c.border = thinBorder; });
+  wsK.getCell('G12').value = { formula: 'IF(C7=0,0,G11/C7)' }; styleOut(wsK.getCell('G12')); wsK.getCell('G12').numFmt = '0.00%';
+  wsK.getCell('B20').value = '📌  2026 GÜNCEL BSMV & KKDF';
+  ['Kredi Türü','KKDF','BSMV','Toplam Yük'].forEach((h,i) => styleHeader(wsK.getCell(21, 2+i)));
+  [['Bireysel','15%','15%','30%'],['Ticari','0%','5%','5%'],['Konut','0%','0%','0%']].forEach((row,ri) => {
+    row.forEach((v,ci) => { wsK.getCell(22+ri, 2+ci).value = v; wsK.getCell(22+ri, 2+ci).border = thinBorder; });
   });
 
-  // ========== ÖDEME PLANI (with formulas) ==========
+  // ——— Ödeme Planı ———
   const wsO = wb.addWorksheet('Ödeme Planı');
   wsO.getColumn(1).width = 6;
   for (let i = 2; i <= 8; i++) wsO.getColumn(i).width = 14;
-
   wsO.mergeCells('A1:H1');
   wsO.getCell('A1').value = '📅  AYLIK ÖDEME PLANI (AMORTİSMAN TABLOSU)';
   wsO.getCell('A1').font = titleFont;
-
   wsO.mergeCells('A2:H2');
   wsO.getCell('A2').value = { formula: "'Kredi Hesaplama'!C6 & \" Kredi  |  Tutar: \" & TEXT('Kredi Hesaplama'!C7,\"#,##0.00\") & \" TL  |  Vade: \" & 'Kredi Hesaplama'!C8 & \" Ay  |  Aylık Faiz: %\" & 'Kredi Hesaplama'!C9" };
-
   const headers = ['Ay','Taksit (TL)','Anapara (TL)','Faiz (TL)','KKDF (TL)','BSMV (TL)','Toplam Vergi','Kalan Anapara'];
-  headers.forEach((h,i) => { const c = wsO.getCell(4, 1+i); c.value = h; styleHeader(c); });
-
-  // 180 rows of formulas matching original Excel
+  headers.forEach((h,i) => styleHeader(wsO.getCell(4, 1+i)));
   for (let i = 1; i <= 180; i++) {
-    const r = 4 + i; // rows 5..184
-    wsO.getCell(r, 1).value = i;
-    wsO.getCell(r, 1).border = thinBorder;
-    wsO.getCell(r, 1).alignment = { horizontal: 'center' };
-
-    // Taksit
+    const r = 4 + i;
+    wsO.getCell(r, 1).value = i; wsO.getCell(r, 1).border = thinBorder;
     wsO.getCell(r, 2).value = { formula: `IF(A${r}>'Kredi Hesaplama'!$C$8,0,ROUND('Kredi Hesaplama'!$G$6,2))` };
-    wsO.getCell(r, 2).numFmt = numFmt; wsO.getCell(r, 2).border = thinBorder;
-
-    // Anapara
     wsO.getCell(r, 3).value = { formula: `IF(A${r}>'Kredi Hesaplama'!$C$8,0,ROUND(B${r}-D${r}-E${r}-F${r},2))` };
-    wsO.getCell(r, 3).numFmt = numFmt; wsO.getCell(r, 3).border = thinBorder;
-
-    // Faiz - first row uses principal, subsequent use remaining
-    if (i === 1) {
-      wsO.getCell(r, 4).value = { formula: `IF(A${r}>'Kredi Hesaplama'!$C$8,0,ROUND('Kredi Hesaplama'!$C$7*('Kredi Hesaplama'!$C$9/100),2))` };
-    } else {
-      wsO.getCell(r, 4).value = { formula: `IF(A${r}>'Kredi Hesaplama'!$C$8,0,ROUND(H${r-1}*('Kredi Hesaplama'!$C$9/100),2))` };
-    }
-    wsO.getCell(r, 4).numFmt = numFmt; wsO.getCell(r, 4).border = thinBorder;
-
-    // KKDF
+    if (i === 1) wsO.getCell(r, 4).value = { formula: `IF(A${r}>'Kredi Hesaplama'!$C$8,0,ROUND('Kredi Hesaplama'!$C$7*('Kredi Hesaplama'!$C$9/100),2))` };
+    else wsO.getCell(r, 4).value = { formula: `IF(A${r}>'Kredi Hesaplama'!$C$8,0,ROUND(H${r-1}*('Kredi Hesaplama'!$C$9/100),2))` };
     wsO.getCell(r, 5).value = { formula: `IF(A${r}>'Kredi Hesaplama'!$C$8,0,ROUND(D${r}*'Kredi Hesaplama'!$C$13,2))` };
-    wsO.getCell(r, 5).numFmt = numFmt; wsO.getCell(r, 5).border = thinBorder;
-
-    // BSMV
     wsO.getCell(r, 6).value = { formula: `IF(A${r}>'Kredi Hesaplama'!$C$8,0,ROUND(D${r}*'Kredi Hesaplama'!$C$14,2))` };
-    wsO.getCell(r, 6).numFmt = numFmt; wsO.getCell(r, 6).border = thinBorder;
-
-    // Toplam Vergi
     wsO.getCell(r, 7).value = { formula: `E${r}+F${r}` };
-    wsO.getCell(r, 7).numFmt = numFmt; wsO.getCell(r, 7).border = thinBorder;
-
-    // Kalan Anapara
-    if (i === 1) {
-      wsO.getCell(r, 8).value = { formula: `IF(A${r}>'Kredi Hesaplama'!$C$8,0,ROUND('Kredi Hesaplama'!$C$7-C${r},2))` };
-    } else {
-      wsO.getCell(r, 8).value = { formula: `IF(A${r}>'Kredi Hesaplama'!$C$8,0,MAX(0,ROUND(H${r-1}-C${r},2)))` };
-    }
-    wsO.getCell(r, 8).numFmt = numFmt; wsO.getCell(r, 8).border = thinBorder;
+    if (i === 1) wsO.getCell(r, 8).value = { formula: `IF(A${r}>'Kredi Hesaplama'!$C$8,0,ROUND('Kredi Hesaplama'!$C$7-C${r},2))` };
+    else wsO.getCell(r, 8).value = { formula: `IF(A${r}>'Kredi Hesaplama'!$C$8,0,MAX(0,ROUND(H${r-1}-C${r},2)))` };
+    for (let c = 2; c <= 8; c++) { wsO.getCell(r, c).numFmt = numFmt; wsO.getCell(r, c).border = thinBorder; }
   }
-
-  // Totals row 186
-  wsO.getCell(186, 1).value = 'TOPLAM';
-  wsO.getCell(186, 1).font = { bold: true }; wsO.getCell(186, 1).fill = lightBlue;
+  wsO.getCell(186, 1).value = 'TOPLAM'; wsO.getCell(186, 1).font = { bold: true }; wsO.getCell(186, 1).fill = lightBlue;
   for (let c = 2; c <= 7; c++) {
-    const col = String.fromCharCode(64 + c); // B=66...
+    const col = String.fromCharCode(64 + c);
     wsO.getCell(186, c).value = { formula: `SUMIF(A5:A184,"<="&'Kredi Hesaplama'!$C$8,${col}5:${col}184)` };
-    wsO.getCell(186, c).numFmt = numFmt;
-    wsO.getCell(186, c).font = { bold: true };
-    wsO.getCell(186, c).fill = lightBlue;
-    wsO.getCell(186, c).border = thinBorder;
+    wsO.getCell(186, c).numFmt = numFmt; wsO.getCell(186, c).font = { bold: true }; wsO.getCell(186, c).fill = lightBlue;
   }
-  wsO.getCell(188, 1).value = 'Not: Vade dışındaki satırlar 0 gösterir. Hesaplama eşit taksit (annuity) yöntemine göredir.';
-  wsO.getCell(188, 1).font = { color: { argb: 'FF666666' }, name: 'Calibri', size: 9 };
-  wsO.mergeCells('A188:H188');
 
-  // ========== POS ==========
+  // ——— POS Komisyon ———
   const wsP = wb.addWorksheet('POS Komisyon');
   wsP.getColumn(2).width = 36; wsP.getColumn(3).width = 14; wsP.getColumn(5).width = 28; wsP.getColumn(6).width = 14;
   wsP.mergeCells('B1:F1');
@@ -961,27 +652,17 @@ async function exportExcel() {
   wsP.getCell('B1').font = titleFont;
   wsP.getCell('B5').value = '📋  İŞLEM BİLGİLERİ'; wsP.getCell('B5').font = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 12 };
   wsP.getCell('E5').value = '✅  MALİYET SONUÇLARI'; wsP.getCell('E5').font = { bold: true, color: { argb: 'FF548235' }, name: 'Calibri', size: 12 };
-
   wsP.getCell('B6').value = 'İşlem Tutarı (TL)'; wsP.getCell('C6').value = val('p-tutar'); styleInput(wsP.getCell('C6')); wsP.getCell('C6').numFmt = numFmt;
   wsP.getCell('B7').value = 'Komisyon Oranı (%)'; wsP.getCell('C7').value = val('p-oran'); styleInput(wsP.getCell('C7'));
   wsP.getCell('B8').value = 'BSMV Oranı (%)'; wsP.getCell('C8').value = val('p-bsmv'); styleInput(wsP.getCell('C8'));
   wsP.getCell('B9').value = 'BSMV komisyona dahil mi?'; wsP.getCell('C9').value = document.getElementById('p-dahil').value; styleInput(wsP.getCell('C9'));
   wsP.getCell('B10').value = 'İşlem Türü'; wsP.getCell('C10').value = document.getElementById('p-tur').value; styleInput(wsP.getCell('C10'));
-
-  // POS formulas
-  wsP.getCell('E6').value = 'Brüt Komisyon';
-  wsP.getCell('F6').value = { formula: 'C6*C7/100' }; styleOut(wsP.getCell('F6'));
-  wsP.getCell('E7').value = 'BSMV Tutarı';
-  wsP.getCell('F7').value = { formula: 'IF(C9="Evet",0,F6*C8/100)' }; styleOut(wsP.getCell('F7'));
-  wsP.getCell('E8').value = 'TOPLAM KOMİSYON MALİYETİ';
-  wsP.getCell('F8').value = { formula: 'F6+F7' }; styleOut(wsP.getCell('F8')); wsP.getCell('F8').fill = greenFill;
-  wsP.getCell('E9').value = 'HESABA GEÇEN NET TUTAR';
-  wsP.getCell('F9').value = { formula: 'C6-F8' }; styleOut(wsP.getCell('F9')); wsP.getCell('F9').fill = greenFill;
-  wsP.getCell('E10').value = 'Efektif Maliyet Oranı';
-  wsP.getCell('F10').value = { formula: 'IF(C6=0,0,F8/C6)' }; styleOut(wsP.getCell('F10')); wsP.getCell('F10').numFmt = pctFmt;
-
-  wsP.getCell('B13').value = '🔄  TERS HESAP (Net X TL almak için)';
-  wsP.getCell('B13').font = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 11 };
+  wsP.getCell('E6').value = 'Brüt Komisyon'; wsP.getCell('F6').value = { formula: 'C6*C7/100' }; styleOut(wsP.getCell('F6'));
+  wsP.getCell('E7').value = 'BSMV Tutarı'; wsP.getCell('F7').value = { formula: 'IF(C9="Evet",0,F6*C8/100)' }; styleOut(wsP.getCell('F7'));
+  wsP.getCell('E8').value = 'TOPLAM KOMİSYON MALİYETİ'; wsP.getCell('F8').value = { formula: 'F6+F7' }; styleOut(wsP.getCell('F8')); wsP.getCell('F8').fill = greenFill;
+  wsP.getCell('E9').value = 'HESABA GEÇEN NET TUTAR'; wsP.getCell('F9').value = { formula: 'C6-F8' }; styleOut(wsP.getCell('F9')); wsP.getCell('F9').fill = greenFill;
+  wsP.getCell('E10').value = 'Efektif Maliyet Oranı'; wsP.getCell('F10').value = { formula: 'IF(C6=0,0,F8/C6)' }; styleOut(wsP.getCell('F10')); wsP.getCell('F10').numFmt = '0.00%';
+  wsP.getCell('B13').value = '🔄  TERS HESAP';
   wsP.getCell('B14').value = 'İstenen Net Tutar (TL)'; wsP.getCell('C14').value = val('p-net-istenen'); styleInput(wsP.getCell('C14')); wsP.getCell('C14').numFmt = numFmt;
   wsP.getCell('B15').value = 'Çekilmesi Gereken Brüt Tutar';
   wsP.getCell('C15').value = { formula: 'IF(C9="Evet",IF(C7/100>=1,0,C14/(1-C7/100)),IF((C7/100)*(1+C8/100)>=1,0,C14/(1-(C7/100)*(1+C8/100))))' };
@@ -989,160 +670,143 @@ async function exportExcel() {
   wsP.getCell('B16').value = 'Bu işlemdeki komisyon maliyeti';
   wsP.getCell('C16').value = { formula: 'C15-C14' }; styleOut(wsP.getCell('C16'));
 
-  // ========== TAŞIT ==========
+  // ——— Taşıt Kredisi ———
   const wsT = wb.addWorksheet('Taşıt Kredisi');
   wsT.getColumn(2).width = 36; wsT.getColumn(3).width = 16; wsT.getColumn(6).width = 28; wsT.getColumn(7).width = 16;
   wsT.mergeCells('B1:G1');
   wsT.getCell('B1').value = '🚗  TAŞIT KREDİSİ HESAPLAMA (BDDK LTV & Vade Kuralları)';
   wsT.getCell('B1').font = titleFont;
-
   wsT.getCell('B5').value = '📋  ARAÇ & KREDİ BİLGİLERİ'; wsT.getCell('B5').font = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 12 };
   wsT.getCell('F5').value = '✅  HESAPLAMA SONUÇLARI'; wsT.getCell('F5').font = { bold: true, color: { argb: 'FF548235' }, name: 'Calibri', size: 12 };
-
   wsT.getCell('B6').value = 'Araç Türü'; wsT.getCell('C6').value = document.getElementById('t-tur').value; styleInput(wsT.getCell('C6'));
   wsT.getCell('B7').value = 'Araç Değeri (Fatura/Kasko) TL'; wsT.getCell('C7').value = val('t-deger'); styleInput(wsT.getCell('C7')); wsT.getCell('C7').numFmt = numFmt;
   wsT.getCell('B8').value = 'İstenen Kredi Tutarı (TL)'; wsT.getCell('C8').value = val('t-tutar'); styleInput(wsT.getCell('C8')); wsT.getCell('C8').numFmt = numFmt;
   wsT.getCell('B9').value = 'Vade (Ay)'; wsT.getCell('C9').value = val('t-vade'); styleInput(wsT.getCell('C9'));
   wsT.getCell('B10').value = 'Aylık Faiz Oranı (%)'; wsT.getCell('C10').value = val('t-faiz'); styleInput(wsT.getCell('C10'));
   wsT.getCell('B11').value = 'Dosya Masrafı (TL)'; wsT.getCell('C11').value = val('t-masraf'); styleInput(wsT.getCell('C11')); wsT.getCell('C11').numFmt = numFmt;
-
-  // BDDK limits formulas
-  wsT.getCell('B13').value = '📊  BDDK AZAMİ LİMİTLER (Otomatik)';
-  wsT.getCell('B13').font = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 11 };
+  wsT.getCell('B13').value = '📊  BDDK AZAMİ LİMİTLER';
   wsT.getCell('B14').value = 'Azami Kredi Oranı (LTV)';
   wsT.getCell('C14').value = { formula: 'IF(C6="Elektrikli",IF(C7<=2500000,0.7,IF(C7<=5000000,0.5,IF(C7<=6500000,0.3,IF(C7<=7500000,0.2,0)))),IF(C7<=400000,0.7,IF(C7<=800000,0.5,IF(C7<=1200000,0.3,IF(C7<=2000000,0.2,0)))))' };
-  styleOut(wsT.getCell('C14')); wsT.getCell('C14').numFmt = pctFmt;
+  styleOut(wsT.getCell('C14')); wsT.getCell('C14').numFmt = '0%';
   wsT.getCell('B15').value = 'Azami Vade (Ay)';
   wsT.getCell('C15').value = { formula: 'IF(C6="Elektrikli",IF(C7<=2500000,48,IF(C7<=5000000,36,IF(C7<=6500000,24,IF(C7<=7500000,12,0)))),IF(C7<=400000,48,IF(C7<=800000,36,IF(C7<=1200000,24,IF(C7<=2000000,12,0)))))' };
   styleOut(wsT.getCell('C15'));
-  wsT.getCell('B16').value = 'Azami Kredi Tutarı (TL)';
-  wsT.getCell('C16').value = { formula: 'ROUND(C7*C14,2)' }; styleOut(wsT.getCell('C16'));
-  wsT.getCell('B17').value = 'Asgari Peşinat (TL)';
-  wsT.getCell('C17').value = { formula: 'C7-C16' }; styleOut(wsT.getCell('C17'));
-  wsT.getCell('B18').value = 'Kullanılabilir Kredi';
-  wsT.getCell('C18').value = { formula: 'MIN(C8,C16)' }; styleOut(wsT.getCell('C18'));
-  wsT.getCell('B19').value = 'Uygulanan Vade';
-  wsT.getCell('C19').value = { formula: 'MIN(C9,C15)' }; styleOut(wsT.getCell('C19'));
-
-  wsT.getCell('B21').value = '📊  VERGİ / FON';
+  wsT.getCell('B16').value = 'Azami Kredi Tutarı (TL)'; wsT.getCell('C16').value = { formula: 'ROUND(C7*C14,2)' }; styleOut(wsT.getCell('C16'));
+  wsT.getCell('B17').value = 'Asgari Peşinat (TL)'; wsT.getCell('C17').value = { formula: 'C7-C16' }; styleOut(wsT.getCell('C17'));
+  wsT.getCell('B18').value = 'Kullanılabilir Kredi'; wsT.getCell('C18').value = { formula: 'MIN(C8,C16)' }; styleOut(wsT.getCell('C18'));
+  wsT.getCell('B19').value = 'Uygulanan Vade'; wsT.getCell('C19').value = { formula: 'MIN(C9,C15)' }; styleOut(wsT.getCell('C19'));
   wsT.getCell('B22').value = 'KKDF Oranı'; wsT.getCell('C22').value = val('t-kkdf'); styleInput(wsT.getCell('C22'));
   wsT.getCell('B23').value = 'BSMV Oranı'; wsT.getCell('C23').value = val('t-bsmv'); styleInput(wsT.getCell('C23'));
   wsT.getCell('B24').value = 'Efektif Aylık Faiz';
   wsT.getCell('C24').value = { formula: 'C10/100*(1+C22+C23)' }; styleOut(wsT.getCell('C24')); wsT.getCell('C24').numFmt = '0.00000';
-
-  // Results
   wsT.getCell('F6').value = 'Aylık Taksit';
   wsT.getCell('G6').value = { formula: 'IF(OR(C18<=0,C19<=0),0,IF(C24=0,C18/C19,C18*C24*(1+C24)^C19/((1+C24)^C19-1)))' };
   styleOut(wsT.getCell('G6')); wsT.getCell('G6').fill = greenFill;
-  wsT.getCell('F7').value = 'Toplam Geri Ödeme';
-  wsT.getCell('G7').value = { formula: 'G6*C19+C11' }; styleOut(wsT.getCell('G7'));
-  wsT.getCell('F8').value = 'Toplam Faiz+Vergi';
-  wsT.getCell('G8').value = { formula: 'G7-C18-C11' }; styleOut(wsT.getCell('G8'));
-  wsT.getCell('F9').value = 'Toplam Faiz (vergisiz)';
-  wsT.getCell('G9').value = { formula: 'IF((1+C22+C23)=0,0,G8/(1+C22+C23))' }; styleOut(wsT.getCell('G9'));
-  wsT.getCell('F10').value = 'Toplam KKDF';
-  wsT.getCell('G10').value = { formula: 'G9*C22' }; styleOut(wsT.getCell('G10'));
-  wsT.getCell('F11').value = 'Toplam BSMV';
-  wsT.getCell('G11').value = { formula: 'G9*C23' }; styleOut(wsT.getCell('G11'));
-  wsT.getCell('F12').value = 'Peşinat (ödenmesi gereken)';
-  wsT.getCell('G12').value = { formula: 'C7-C18' }; styleOut(wsT.getCell('G12'));
+  wsT.getCell('F7').value = 'Toplam Geri Ödeme'; wsT.getCell('G7').value = { formula: 'G6*C19+C11' }; styleOut(wsT.getCell('G7'));
+  wsT.getCell('F8').value = 'Toplam Faiz+Vergi'; wsT.getCell('G8').value = { formula: 'G7-C18-C11' }; styleOut(wsT.getCell('G8'));
+  wsT.getCell('F9').value = 'Toplam Faiz (vergisiz)'; wsT.getCell('G9').value = { formula: 'IF((1+C22+C23)=0,0,G8/(1+C22+C23))' }; styleOut(wsT.getCell('G9'));
+  wsT.getCell('F10').value = 'Toplam KKDF'; wsT.getCell('G10').value = { formula: 'G9*C22' }; styleOut(wsT.getCell('G10'));
+  wsT.getCell('F11').value = 'Toplam BSMV'; wsT.getCell('G11').value = { formula: 'G9*C23' }; styleOut(wsT.getCell('G11'));
+  wsT.getCell('F12').value = 'Peşinat'; wsT.getCell('G12').value = { formula: 'C7-C18' }; styleOut(wsT.getCell('G12'));
 
-  // ========== KMH ==========
+  // ——— Ek Hesap (KMH) ———
   const wsM = wb.addWorksheet('Ek Hesap (KMH)');
   wsM.getColumn(2).width = 32; wsM.getColumn(3).width = 14; wsM.getColumn(5).width = 28; wsM.getColumn(6).width = 14;
   wsM.mergeCells('B1:F1');
-  wsM.getCell('B1').value = '💳  EK HESAP (KMH) / KREDİLİ MEVDUAT HESABI MALİYET HESAPLAMA';
+  wsM.getCell('B1').value = '💳  EK HESAP (KMH) / KREDİLİ MEVDUAT HESABI MALİYET';
   wsM.getCell('B1').font = titleFont;
-
-  wsM.getCell('B5').value = '📋  KULLANIM BİLGİLERİ'; wsM.getCell('B5').font = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 12 };
-  wsM.getCell('E5').value = '✅  MALİYET SONUÇLARI'; wsM.getCell('E5').font = { bold: true, color: { argb: 'FF548235' }, name: 'Calibri', size: 12 };
-
+  wsM.getCell('B5').value = '📋  KULLANIM BİLGİLERİ'; wsM.getCell('E5').value = '✅  MALİYET SONUÇLARI';
   wsM.getCell('B6').value = 'Hesap Türü'; wsM.getCell('C6').value = document.getElementById('m-tur').value; styleInput(wsM.getCell('C6'));
   wsM.getCell('B7').value = 'Kullanılan Tutar (TL)'; wsM.getCell('C7').value = val('m-tutar'); styleInput(wsM.getCell('C7')); wsM.getCell('C7').numFmt = numFmt;
   wsM.getCell('B8').value = 'Kullanım Süresi (Gün)'; wsM.getCell('C8').value = val('m-gun'); styleInput(wsM.getCell('C8'));
   wsM.getCell('B9').value = 'Aylık Akdi Faiz Oranı (%)'; wsM.getCell('C9').value = val('m-akdi'); styleInput(wsM.getCell('C9'));
   wsM.getCell('B10').value = 'Aylık Gecikme Faiz Oranı (%)'; wsM.getCell('C10').value = val('m-gecikme'); styleInput(wsM.getCell('C10'));
   wsM.getCell('B11').value = 'Gecikme Günü (varsa)'; wsM.getCell('C11').value = val('m-gecikme-gun'); styleInput(wsM.getCell('C11'));
-
   wsM.getCell('B13').value = 'KKDF Oranı'; wsM.getCell('C13').value = val('m-kkdf'); styleInput(wsM.getCell('C13'));
   wsM.getCell('B14').value = 'BSMV Oranı'; wsM.getCell('C14').value = val('m-bsmv'); styleInput(wsM.getCell('C14'));
-  wsM.getCell('B15').value = 'Toplam Vergi/Fon';
-  wsM.getCell('C15').value = { formula: 'C13+C14' }; styleOut(wsM.getCell('C15'));
+  wsM.getCell('B15').value = 'Toplam Vergi/Fon'; wsM.getCell('C15').value = { formula: 'C13+C14' }; styleOut(wsM.getCell('C15'));
+  wsM.getCell('E6').value = 'Brüt Akdi Faiz'; wsM.getCell('F6').value = { formula: 'C7*(C9/100)/30*C8' }; styleOut(wsM.getCell('F6'));
+  wsM.getCell('E7').value = 'Brüt Gecikme Faizi'; wsM.getCell('F7').value = { formula: 'C7*(C10/100)/30*C11' }; styleOut(wsM.getCell('F7'));
+  wsM.getCell('E8').value = 'Toplam Brüt Faiz'; wsM.getCell('F8').value = { formula: 'F6+F7' }; styleOut(wsM.getCell('F8'));
+  wsM.getCell('E9').value = 'KKDF'; wsM.getCell('F9').value = { formula: 'F8*C13' }; styleOut(wsM.getCell('F9'));
+  wsM.getCell('E10').value = 'BSMV'; wsM.getCell('F10').value = { formula: 'F8*C14' }; styleOut(wsM.getCell('F10'));
+  wsM.getCell('E11').value = 'Toplam Vergi/Fon'; wsM.getCell('F11').value = { formula: 'F9+F10' }; styleOut(wsM.getCell('F11'));
+  wsM.getCell('E12').value = 'TOPLAM MALİYET'; wsM.getCell('F12').value = { formula: 'F8+F11' }; styleOut(wsM.getCell('F12')); wsM.getCell('F12').fill = greenFill;
+  wsM.getCell('E13').value = 'Toplam Geri Ödeme'; wsM.getCell('F13').value = { formula: 'C7+F12' }; styleOut(wsM.getCell('F13'));
+  wsM.getCell('E14').value = 'Günlük Ortalama Maliyet'; wsM.getCell('F14').value = { formula: 'IF(C8=0,0,F12/C8)' }; styleOut(wsM.getCell('F14'));
 
-  wsM.getCell('E6').value = 'Brüt Akdi Faiz';
-  wsM.getCell('F6').value = { formula: 'C7*(C9/100)/30*C8' }; styleOut(wsM.getCell('F6'));
-  wsM.getCell('E7').value = 'Brüt Gecikme Faizi';
-  wsM.getCell('F7').value = { formula: 'C7*(C10/100)/30*C11' }; styleOut(wsM.getCell('F7'));
-  wsM.getCell('E8').value = 'Toplam Brüt Faiz';
-  wsM.getCell('F8').value = { formula: 'F6+F7' }; styleOut(wsM.getCell('F8'));
-  wsM.getCell('E9').value = 'KKDF';
-  wsM.getCell('F9').value = { formula: 'F8*C13' }; styleOut(wsM.getCell('F9'));
-  wsM.getCell('E10').value = 'BSMV';
-  wsM.getCell('F10').value = { formula: 'F8*C14' }; styleOut(wsM.getCell('F10'));
-  wsM.getCell('E11').value = 'Toplam Vergi/Fon';
-  wsM.getCell('F11').value = { formula: 'F9+F10' }; styleOut(wsM.getCell('F11'));
-  wsM.getCell('E12').value = 'TOPLAM MALİYET';
-  wsM.getCell('F12').value = { formula: 'F8+F11' }; styleOut(wsM.getCell('F12')); wsM.getCell('F12').fill = greenFill;
-  wsM.getCell('E13').value = 'Toplam Geri Ödeme';
-  wsM.getCell('F13').value = { formula: 'C7+F12' }; styleOut(wsM.getCell('F13'));
-  wsM.getCell('E14').value = 'Günlük Ortalama Maliyet';
-  wsM.getCell('F14').value = { formula: 'IF(C8=0,0,F12/C8)' }; styleOut(wsM.getCell('F14'));
-
-  // ========== MEVDUAT ==========
+  // ——— Mevduat Getirisi ———
   const wsD = wb.addWorksheet('Mevduat Getirisi');
   wsD.getColumn(2).width = 32; wsD.getColumn(3).width = 14; wsD.getColumn(5).width = 28; wsD.getColumn(6).width = 14;
   wsD.mergeCells('B1:F1');
   wsD.getCell('B1').value = '💰  MEVDUAT FAİZ GETİRİSİ HESAPLAMA';
   wsD.getCell('B1').font = titleFont;
-
-  wsD.getCell('B5').value = '📋  MEVDUAT BİLGİLERİ'; wsD.getCell('B5').font = { bold: true, color: { argb: 'FF1F4E79' }, name: 'Calibri', size: 12 };
-  wsD.getCell('E5').value = '✅  GETİRİ SONUÇLARI'; wsD.getCell('E5').font = { bold: true, color: { argb: 'FF548235' }, name: 'Calibri', size: 12 };
-
+  wsD.getCell('B5').value = '📋  MEVDUAT BİLGİLERİ'; wsD.getCell('E5').value = '✅  GETİRİ SONUÇLARI';
   wsD.getCell('B6').value = 'Anapara (TL)'; wsD.getCell('C6').value = val('d-anapara'); styleInput(wsD.getCell('C6')); wsD.getCell('C6').numFmt = numFmt;
   wsD.getCell('B7').value = 'Vade (Gün)'; wsD.getCell('C7').value = val('d-gun'); styleInput(wsD.getCell('C7'));
   wsD.getCell('B8').value = 'Yıllık Faiz Oranı (%)'; wsD.getCell('C8').value = val('d-faiz'); styleInput(wsD.getCell('C8'));
   wsD.getCell('B9').value = 'Para Birimi'; wsD.getCell('C9').value = document.getElementById('d-pb').value; styleInput(wsD.getCell('C9'));
-
   wsD.getCell('B11').value = 'Stopaj Oranı (otomatik)';
   wsD.getCell('C11').value = { formula: 'IF(C9="Döviz",0.25,IF(C9="Altın",0.15,IF(C7<=180,0.175,IF(C7<=365,0.15,0.1))))' };
-  styleOut(wsD.getCell('C11')); wsD.getCell('C11').numFmt = pctFmt;
+  styleOut(wsD.getCell('C11')); wsD.getCell('C11').numFmt = '0.0%';
   wsD.getCell('B12').value = 'Manuel Stopaj (opsiyonel)';
   const manS = document.getElementById('d-stopaj-man').value;
   if (manS !== '') { wsD.getCell('C12').value = parseFloat(manS); styleInput(wsD.getCell('C12')); }
   else { wsD.getCell('C12').value = null; styleInput(wsD.getCell('C12')); }
   wsD.getCell('B13').value = 'Uygulanan Stopaj';
-  wsD.getCell('C13').value = { formula: 'IF(C12="",C11,C12)' }; styleOut(wsD.getCell('C13')); wsD.getCell('C13').numFmt = pctFmt;
-
-  wsD.getCell('E6').value = 'Brüt Faiz Geliri';
-  wsD.getCell('F6').value = { formula: 'C6*C8/100*(C7/365)' }; styleOut(wsD.getCell('F6'));
-  wsD.getCell('E7').value = 'Stopaj Tutarı';
-  wsD.getCell('F7').value = { formula: 'F6*C13' }; styleOut(wsD.getCell('F7'));
-  wsD.getCell('E8').value = 'NET FAİZ GETİRİSİ';
-  wsD.getCell('F8').value = { formula: 'F6-F7' }; styleOut(wsD.getCell('F8')); wsD.getCell('F8').fill = greenFill;
-  wsD.getCell('E9').value = 'Vade Sonu Net Bakiye';
-  wsD.getCell('F9').value = { formula: 'C6+F8' }; styleOut(wsD.getCell('F9')); wsD.getCell('F9').fill = greenFill;
+  wsD.getCell('C13').value = { formula: 'IF(OR(C12="",C12=0),C11,IF(C12>1,C12/100,C12))' };
+  styleOut(wsD.getCell('C13')); wsD.getCell('C13').numFmt = '0.0%';
+  wsD.getCell('E6').value = 'Brüt Faiz Geliri'; wsD.getCell('F6').value = { formula: 'C6*C8/100*(C7/365)' }; styleOut(wsD.getCell('F6'));
+  wsD.getCell('E7').value = 'Stopaj Tutarı'; wsD.getCell('F7').value = { formula: 'F6*C13' }; styleOut(wsD.getCell('F7'));
+  wsD.getCell('E8').value = 'NET FAİZ GETİRİSİ'; wsD.getCell('F8').value = { formula: 'F6-F7' }; styleOut(wsD.getCell('F8')); wsD.getCell('F8').fill = greenFill;
+  wsD.getCell('E9').value = 'Vade Sonu Net Bakiye'; wsD.getCell('F9').value = { formula: 'C6+F8' }; styleOut(wsD.getCell('F9')); wsD.getCell('F9').fill = greenFill;
   wsD.getCell('E10').value = 'Net Yıllık Getiri Oranı';
-  wsD.getCell('F10').value = { formula: 'IF(C6=0,0,(F8/C6)*(365/C7))' }; styleOut(wsD.getCell('F10')); wsD.getCell('F10').numFmt = pctFmt;
+  wsD.getCell('F10').value = { formula: 'IF(C6=0,0,(F8/C6)*(365/C7))' }; styleOut(wsD.getCell('F10')); wsD.getCell('F10').numFmt = '0.00%';
   wsD.getCell('E11').value = 'Brüt Yıllık Getiri Oranı';
-  wsD.getCell('F11').value = { formula: 'C8/100' }; styleOut(wsD.getCell('F11')); wsD.getCell('F11').numFmt = pctFmt;
+  wsD.getCell('F11').value = { formula: 'C8/100' }; styleOut(wsD.getCell('F11')); wsD.getCell('F11').numFmt = '0.00%';
+  wsD.getCell('B17').value = '📌  STOPAJ ORANLARI (2026)';
+  [['TL ≤ 180 gün','17,5%'],['TL 181-365 gün','15%'],['TL ≥ 366 gün','10%'],['Döviz','25%'],['Altın','15%']].forEach((row,ri) => {
+    wsD.getCell(18+ri, 2).value = row[0]; wsD.getCell(18+ri, 3).value = row[1];
+  });
 
-  // Download
+  // ——— Banka Oranları (referans) ———
+  const wsB = wb.addWorksheet('Banka Oranları');
+  wsB.getColumn(1).width = 28; wsB.getColumn(2).width = 12; wsB.getColumn(3).width = 12; wsB.getColumn(4).width = 12;
+  wsB.getCell('A1').value = '🏦  GÜNCEL BANKA FAİZ ORANLARI (Yaklaşık – Ağustos 2026)';
+  wsB.getCell('A1').font = titleFont;
+  wsB.getCell('A3').value = 'İhtiyaç / Bireysel';
+  ['Banka','Min %','Max %','Max Vade'].forEach((h,i) => styleHeader(wsB.getCell(4, 1+i)));
+  [['QNB / Finansbank',2.84,3.84,'36 ay'],['Ziraat',2.99,4.19,'36 ay'],['ING',2.99,3.54,'36 ay'],
+   ['Enpara.com',3.39,3.79,'36 ay'],['Akbank',3.69,4.19,'36 ay'],['Garanti BBVA',3.1,4.29,'36 ay'],
+   ['İş Bankası',3.49,4.54,'36 ay'],['VakıfBank / Halkbank',2.85,4.99,'36 ay']].forEach((row,ri) => {
+    row.forEach((v,ci) => { wsB.getCell(5+ri, 1+ci).value = v; wsB.getCell(5+ri, 1+ci).border = thinBorder; });
+  });
+  wsB.getCell('A15').value = 'Konut Kredisi';
+  ['Banka','Min %','Max %','Max Vade'].forEach((h,i) => styleHeader(wsB.getCell(16, 1+i)));
+  [['Ziraat / Halkbank / VakıfBank',2.29,3.19,'120 ay'],['QNB / İş Bankası',2.49,3.1,'120 ay'],
+   ['Akbank / Yapı Kredi',2.79,3.6,'120 ay']].forEach((row,ri) => {
+    row.forEach((v,ci) => { wsB.getCell(17+ri, 1+ci).value = v; wsB.getCell(17+ri, 1+ci).border = thinBorder; });
+  });
+
+  // ——— Bilgi ———
+  const wsBilgi = wb.addWorksheet('Bilgi & Açıklamalar');
+  wsBilgi.getColumn(1).width = 100;
+  wsBilgi.getCell('A1').value = '📖  KREDİ HESAPLAMA PANELİ - AÇIKLAMALAR';
+  wsBilgi.getCell('A1').font = titleFont;
+  wsBilgi.getCell('A3').value = 'Hesaplama: Eşit taksit (annuity). Efektif aylık faiz = Nominal × (1 + KKDF + BSMV).';
+  wsBilgi.getCell('A4').value = 'Taksit = Tutar × r × (1+r)^n / ((1+r)^n − 1)';
+  wsBilgi.getCell('A6').value = 'Oranlar (2026): Bireysel KKDF %15 + BSMV %15 | Ticari KKDF %0 + BSMV %5 | Konut muaf.';
+  wsBilgi.getCell('A8').value = 'Bu panel bilgilendirme amaçlıdır; nihai teklif bankaya göre değişir.';
+
   const buf = await wb.xlsx.writeBuffer();
   const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = 'Kredi_Hesaplama_Paneli.xlsx';
-  a.click();
+  a.href = url; a.download = 'Kredi_Hesaplama_Paneli.xlsx'; a.click();
   URL.revokeObjectURL(url);
 }
 
-// Init
-calcKredi();
-calcPOS();
-calcTasit();
-calcKMH();
-calcMevduat();
+calcKredi(); calcPOS(); calcTasit(); calcKMH(); calcMevduat();
 </script>
 </body>
 </html>

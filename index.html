@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Finans Panelleri</title>
+  <title>Finans Panelleri | Özel Excel &amp; Hesaplama Araçları</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Segoe UI', Arial, sans-serif;
+      font-family: 'Segoe UI', system-ui, Arial, sans-serif;
       background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 50%, #3182ce 100%);
       min-height: 100vh;
       display: flex;
@@ -19,21 +19,31 @@
       background: white;
       border-radius: 16px;
       padding: 40px 36px;
-      max-width: 480px;
+      max-width: 520px;
       width: 100%;
       box-shadow: 0 20px 60px rgba(0,0,0,0.25);
     }
     h1 {
-      font-size: 1.6rem;
+      font-size: 1.35rem;
       color: #1F4E79;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       text-align: center;
+      line-height: 1.35;
     }
     .subtitle {
       text-align: center;
-      color: #666;
+      color: #555;
       font-size: 0.9rem;
-      margin-bottom: 28px;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    .badge {
+      display: block;
+      text-align: center;
+      font-size: 0.78rem;
+      color: #2b6cb0;
+      font-weight: 600;
+      margin-bottom: 22px;
     }
     a.panel {
       display: flex;
@@ -57,10 +67,7 @@
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(31,78,121,0.3);
     }
-    a.panel .icon {
-      font-size: 1.8rem;
-      line-height: 1;
-    }
+    a.panel .icon { font-size: 1.8rem; line-height: 1; }
     a.panel .desc {
       font-size: 0.78rem;
       font-weight: 400;
@@ -68,24 +75,61 @@
       margin-top: 2px;
     }
     a.panel:hover .desc { color: rgba(255,255,255,0.75); }
+    .benefits {
+      background: #f0f7ff;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin: 18px 0 8px;
+      font-size: 0.82rem;
+      color: #334155;
+      line-height: 1.55;
+    }
+    .benefits strong { color: #1F4E79; }
+    .contact {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid #e2e8f0;
+      text-align: center;
+    }
+    .contact-label {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    .contact a {
+      display: inline-block;
+      color: #1F4E79;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: #e8f0fe;
+      transition: background 0.2s;
+    }
+    .contact a:hover { background: #d0e2fc; }
     .footer {
       text-align: center;
-      margin-top: 24px;
-      font-size: 0.75rem;
+      margin-top: 18px;
+      font-size: 0.72rem;
       color: #a0aec0;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>Finans Panelleri</h1>
-    <p class="subtitle">Gelir–gider takibi ve kredi hesaplama araçları</p>
+    <h1>Şahsınız ve/veya firmanız için<br>gerekli Excel dosyaları hazırlanır</h1>
+    <p class="subtitle">
+      Hazır panelleri kullanın veya ihtiyacınıza özel
+      gelir–gider, nakit akış, kredi ve maliyet hesaplama tabloları talep edin.
+    </p>
+    <span class="badge">Formüllü • Biçimli • Anında kullanılabilir</span>
 
     <a class="panel" href="Gelir_Gider_Nakit_Akis.html">
       <span class="icon">💰</span>
       <div>
-        Gelir – Gider & Nakit Akış
-        <div class="desc">Aylık gelir/gider girişi • Nakit akış özeti • Excel kaydet</div>
+        Gelir – Gider &amp; Nakit Akış
+        <div class="desc">Aylık giriş • Özet &amp; kümülatif bakiye • Excel kaydet</div>
       </div>
     </a>
 
@@ -96,6 +140,19 @@
         <div class="desc">Bireysel / Ticari / Konut • POS • Taşıt • KMH • Mevduat</div>
       </div>
     </a>
+
+    <div class="benefits">
+      <strong>Neden özel Excel?</strong><br>
+      • İşinize / bütçenize göre kalemler ve formüller<br>
+      • KKDF, BSMV, stopaj, LTV gibi güncel kurallar<br>
+      • Web paneli + aynı yapıda indirilebilir Excel<br>
+      • Tek seferlik veya düzenli güncelleme seçenekleri
+    </div>
+
+    <div class="contact">
+      <div class="contact-label">Özel dosya ve panel talepleri için</div>
+      <a href="mailto:fatihstr83@gmail.com">📧 fatihstr83@gmail.com</a>
+    </div>
 
     <p class="footer">Ağustos 2026 • Formüllü Excel dışa aktarım destekli</p>
   </div>
