@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finans Panelleri</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 50%, #3182ce 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px 36px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    h1 {
+      font-size: 1.6rem;
+      color: #1F4E79;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+    a.panel {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      margin: 12px 0;
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #1a202c;
+      font-weight: 600;
+      font-size: 1.05rem;
+      transition: all 0.2s;
+    }
+    a.panel:hover {
+      background: #1F4E79;
+      color: white;
+      border-color: #1F4E79;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(31,78,121,0.3);
+    }
+    a.panel .icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+    a.panel .desc {
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: #718096;
+      margin-top: 2px;
+    }
+    a.panel:hover .desc { color: rgba(255,255,255,0.75); }
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.75rem;
+      color: #a0aec0;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Finans Panelleri</h1>
+    <p class="subtitle">Gelir–gider takibi ve kredi hesaplama araçları</p>
+
+    <a class="panel" href="Gelir_Gider_Nakit_Akis.html">
+      <span class="icon">💰</span>
+      <div>
+        Gelir – Gider & Nakit Akış
+        <div class="desc">Aylık gelir/gider girişi • Nakit akış özeti • Excel kaydet</div>
+      </div>
+    </a>
+
+    <a class="panel" href="Kredi_Hesaplama_Paneli.html">
+      <span class="icon">🏦</span>
+      <div>
+        Kredi Hesaplama Paneli
+        <div class="desc">Bireysel / Ticari / Konut • POS • Taşıt • KMH • Mevduat</div>
+      </div>
+    </a>
+
+    <p class="footer">Ağustos 2026 • Formüllü Excel dışa aktarım destekli</p>
+  </div>
+</body>
+</html>
