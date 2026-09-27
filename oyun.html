@@ -109,7 +109,7 @@ const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.setSize(innerWidth,innerHeight);
 const scene=new THREE.Scene();
-scene.fog=new THREE.FogExp2(0x171208,0.05);
+scene.fog=new THREE.FogExp2(0x171208,0.06);
 scene.background=new THREE.Color(0x0a0906);
 const camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,100);
 camera.rotation.order='YXZ';
@@ -125,10 +125,22 @@ function makeTex(base,stain,rep){
   const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep,rep);return t;
 }
 const wallTex=makeTex('#a99a4e','rgba(30,20,0,A)',1);
-const floorTex=makeTex('#7a6d38','rgba(0,0,0,A)',W);
+function makeCarpetTex(base,lattice,stain,rep){
+  const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');
+  x.fillStyle=base;x.fillRect(0,0,256,256);
+  x.strokeStyle=lattice;x.lineWidth=1.4;
+  for(let i=-256;i<512;i+=30){
+    x.beginPath();x.moveTo(i,0);x.lineTo(i+256,256);x.stroke();
+    x.beginPath();x.moveTo(i,256);x.lineTo(i-256,256);x.stroke();
+  }
+  for(let i=0;i<200;i++){x.fillStyle=stain.replace('A',(Math.random()*0.18).toFixed(2));x.fillRect(Math.random()*256,Math.random()*256,6+Math.random()*24,6+Math.random()*24);}
+  for(let i=0;i<400;i++){x.fillStyle='rgba(0,0,0,'+(Math.random()*0.06).toFixed(2)+')';x.fillRect(Math.random()*256,Math.random()*256,1,1);}
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep,rep);return t;
+}
+const floorTex=makeCarpetTex('#7a6d38','rgba(50,40,10,0.3)','rgba(0,0,0,A)',W);
 const ceilTex=makeTex('#c7c199','rgba(0,0,0,A)',H);
 
-scene.add(new THREE.AmbientLight(0x30281a,0.55));
+scene.add(new THREE.AmbientLight(0x30281a,0.42));
 const extent=(W-1)*CELL, ez=(H-1)*CELL;
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(extent+CELL*2,ez+CELL*2),new THREE.MeshStandardMaterial({map:floorTex,roughness:1}));
 floor.rotation.x=-Math.PI/2;floor.position.set(extent/2,0,ez/2);scene.add(floor);
@@ -310,7 +322,7 @@ const BX=300,BZ=300,BSIZE=16;
 const basementEntry={x:BX,z:BZ-BSIZE/2+1.6};
 const eyeBoxPos={x:BX+BSIZE/2-2,z:BZ+BSIZE/2-2};
 const rustWallTex=makeTex('#4a3324','rgba(15,8,0,A)');rustWallTex.repeat.set(3,1);
-const rustFloorTex=makeTex('#3a2c1e','rgba(10,5,0,A)');rustFloorTex.repeat.set(4,4);
+const rustFloorTex=makeCarpetTex('#3a2c1e','rgba(60,30,5,0.25)','rgba(10,5,0,A)',4);
 const bFloor=new THREE.Mesh(new THREE.PlaneGeometry(BSIZE,BSIZE),new THREE.MeshStandardMaterial({map:rustFloorTex,roughness:1}));
 bFloor.rotation.x=-Math.PI/2;bFloor.position.set(BX,0,BZ);scene.add(bFloor);
 const bCeil=new THREE.Mesh(new THREE.PlaneGeometry(BSIZE,BSIZE),new THREE.MeshStandardMaterial({color:0x241c14,roughness:1}));
@@ -418,7 +430,17 @@ document.addEventListener('mousedown',e=>{ if(locked && e.button===0) fireWeapon
 let actx,growlGain,noiseFilter,masterGain;
 function startAudio(){
   actx=new (window.AudioContext||window.webkitAudioContext)();
-  masterGain=actx.createGain();masterGain.gain.value=0.9;masterGain.connect(actx.destination);
+  masterGain=actx.createGain();masterGain.gain.value=0.9;
+  const warmth=actx.createBiquadFilter();warmth.type='lowpass';warmth.frequency.value=9000;
+  const impLen=Math.floor(actx.sampleRate*1.8);
+  const impulse=actx.createBuffer(2,impLen,actx.sampleRate);
+  for(let c=0;c<2;c++){const d=impulse.getChannelData(c);for(let i=0;i<impLen;i++){d[i]=(Math.random()*2-1)*Math.pow(1-i/impLen,2.3);}}
+  const convolver=actx.createConvolver();convolver.buffer=impulse;
+  const dryGain=actx.createGain();dryGain.gain.value=0.85;
+  const wetGain=actx.createGain();wetGain.gain.value=0.32;
+  masterGain.connect(warmth);
+  warmth.connect(dryGain).connect(actx.destination);
+  warmth.connect(convolver).connect(wetGain).connect(actx.destination);
   const osc=actx.createOscillator();osc.type='sine';osc.frequency.value=44;
   const oscGain=actx.createGain();oscGain.gain.value=0.045;
   osc.connect(oscGain).connect(masterGain);osc.start();
@@ -453,11 +475,12 @@ function footstep(sprint){
   src.connect(f).connect(g).connect(masterGain);src.start();
   thud.connect(thudGain).connect(masterGain);thud.start();thud.stop(t+0.08);
 }
-let stepTimer=0,heartTimer=0,dripTimer=3+Math.random()*4,buzzCooldown=0,chaseTimer=0;
+let stepTimer=0,heartTimer=0,dripTimer=3+Math.random()*4,buzzCooldown=0,chaseTimer=0,bobPhase=0;
 let stamina=100,maxStamina=100,canSprint=true;
 const SPRINT_MULT=1.65,STAM_DRAIN=32,STAM_REGEN=16;
 let sanity=100,maxSanity=100;
 const SANITY_DRAIN=5;
+let blackoutTimer=40+Math.random()*40,blackoutActive=0,whisperTimer=25+Math.random()*30;
 let hasWeapon=false,lastShot=-999;
 const WEAPON_COOLDOWN=20,STUN_DURATION=3;
 const raycaster=new THREE.Raycaster();
@@ -671,7 +694,9 @@ function animate(){
     const dx=(fwd.x*iz+rgt.x*ix)*speed, dz=(fwd.z*iz+rgt.z*ix)*speed;
     if(!collide(px+dx,pz)) px+=dx;
     if(!collide(px,pz+dz)) pz+=dz;
-    camera.position.set(px,PL_H,pz);
+    if(moving){ bobPhase += dt*(sprinting?14:8); } 
+    const bobY = moving ? Math.sin(bobPhase)*(sprinting?0.09:0.045) : 0;
+    camera.position.set(px,PL_H+bobY,pz);
 
     if(moving){stepTimer-=dt;if(stepTimer<=0){footstep(sprinting);stepTimer=sprinting?0.24:0.38;}}
     dripTimer-=dt; if(dripTimer<=0){ drip(); dripTimer=3+Math.random()*5; }
@@ -701,7 +726,7 @@ function animate(){
       scene.fog.color.setHex(0x0a0603); scene.fog.density=0.09;
       bLight.intensity=0.9*(0.75+0.25*Math.sin(t*7))*(Math.random()<0.03?0.15:1);
     } else {
-      scene.fog.color.setHex(0x171208); scene.fog.density=0.05;
+      scene.fog.color.setHex(0x171208); scene.fog.density=0.06;
     }
     const dEye=Math.hypot(px-eyeBoxPos.x,pz-eyeBoxPos.z);
     if(dEye<2.3 && eyeCooldown<=0){
@@ -733,7 +758,7 @@ function animate(){
     if(window.__barrier) window.__barrier.material.opacity=0.12+0.08*Math.sin(t*3);
     if(!inSafe) elapsed+=dt;
     document.getElementById('t').textContent=fmt(elapsed);
-    if(!endingTriggered && elapsed>=7200){ triggerEnding(); }
+    if(!endingTriggered && elapsed>=1800){ triggerEnding(); }
 
     // entities
     let nearest=999;
@@ -793,6 +818,19 @@ function animate(){
     const flickerHard = nearest<11 && Math.random()<0.22;
     buzzCooldown-=dt;
     if(flickerHard && buzzCooldown<=0){ crackle(); buzzCooldown=0.5; }
+    blackoutTimer-=dt;
+    if(blackoutTimer<=0 && blackoutActive<=0){ blackoutActive=1.4; blackoutTimer=45+Math.random()*45; beep(40,1.2,0.3,'sawtooth'); }
+    if(blackoutActive>0){ blackoutActive-=dt; for(const l of lights) l.intensity=0.03; }
+    whisperTimer-=dt;
+    if(whisperTimer<=0){
+      whisperTimer=30+Math.random()*40;
+      if(actx){
+        const o=actx.createOscillator(),g=actx.createGain(),t0=actx.currentTime;
+        o.type='sine';o.frequency.setValueAtTime(300+Math.random()*200,t0);o.frequency.exponentialRampToValueAtTime(120,t0+1.2);
+        g.gain.setValueAtTime(0.001,t0);g.gain.linearRampToValueAtTime(0.06,t0+0.3);g.gain.exponentialRampToValueAtTime(0.001,t0+1.4);
+        o.connect(g).connect(masterGain);o.start();o.stop(t0+1.5);
+      }
+    }
     for(const l of lights){
       const base=l.userData.base*(0.82+0.18*Math.sin(t*9+l.userData.seed));
       l.intensity = flickerHard ? base*(Math.random()<0.5?0.05:1.3) : base;
