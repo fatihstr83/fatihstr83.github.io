@@ -295,12 +295,39 @@ const viewGun=new THREE.Group();
   const barrel=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.32,8),new THREE.MeshStandardMaterial({color:0x1a2a34,metalness:0.7,roughness:0.3}));
   barrel.rotation.z=Math.PI/2;barrel.position.set(0.35,0,0);viewGun.add(barrel);
   const core=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,8),new THREE.MeshBasicMaterial({color:0x66ccff}));core.position.set(-0.15,0.05,0);viewGun.add(core);
+  const skinMat=new THREE.MeshStandardMaterial({color:0xc9976b,roughness:0.75});
+  const palm=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.11,0.22),skinMat);
+  palm.position.set(0,-0.13,0.02);viewGun.add(palm);
+  for(let i=0;i<4;i++){
+    const finger=new THREE.Mesh(new THREE.BoxGeometry(0.04,0.045,0.14),skinMat);
+    finger.position.set(-0.06+i*0.04,-0.06,0.14);finger.rotation.x=-0.35;viewGun.add(finger);
+  }
+  const thumb=new THREE.Mesh(new THREE.BoxGeometry(0.045,0.045,0.1),skinMat);
+  thumb.position.set(-0.1,-0.1,-0.02);thumb.rotation.y=0.6;viewGun.add(thumb);
+  const wrist=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.08,0.18,8),skinMat);
+  wrist.rotation.x=Math.PI/2;wrist.position.set(0,-0.18,0.18);viewGun.add(wrist);
 }
 viewGun.position.set(0.28,-0.24,-0.55);
 viewGun.rotation.y=-0.15;
 viewGun.visible=false;
 camera.add(viewGun);
 let gunKick=0;
+const emptyHand=new THREE.Group();
+{
+  const skinMat=new THREE.MeshStandardMaterial({color:0xc9976b,roughness:0.75});
+  const palm=new THREE.Mesh(new THREE.BoxGeometry(0.17,0.1,0.24),skinMat);emptyHand.add(palm);
+  for(let i=0;i<4;i++){
+    const finger=new THREE.Mesh(new THREE.BoxGeometry(0.04,0.045,0.13),skinMat);
+    finger.position.set(-0.06+i*0.04,-0.01,0.16);finger.rotation.x=-0.15;emptyHand.add(finger);
+  }
+  const thumb=new THREE.Mesh(new THREE.BoxGeometry(0.045,0.045,0.1),skinMat);
+  thumb.position.set(-0.11,0.02,0.02);thumb.rotation.y=0.5;emptyHand.add(thumb);
+  const wrist=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.08,0.2,8),skinMat);
+  wrist.rotation.x=Math.PI/2;wrist.position.set(0,-0.03,0.2);emptyHand.add(wrist);
+}
+emptyHand.position.set(0.3,-0.28,-0.5);
+emptyHand.rotation.set(0.1,-0.2,0.1);
+camera.add(emptyHand);
 
 // ---------- safe-zone trapdoor + basement ----------
 const trapdoorPos=(()=>{const c=cellCenter(0,1);return {x:c.x-1.2,z:c.z+1.2};})();
@@ -372,6 +399,62 @@ function makeNoteTexture(){
 }
 const noteMesh=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.1),new THREE.MeshBasicMaterial({map:makeNoteTexture()}));
 noteMesh.rotation.x=-Math.PI/2;noteMesh.rotation.z=0.3;noteMesh.position.set(BX-2.5,0.03,BZ-1.5);scene.add(noteMesh);
+const ladderCell=[6,6];
+const ventLadderPos=(()=>{const c=cellCenter(ladderCell[0],ladderCell[1]);return {x:c.x+1.2,z:c.z-1.2};})();
+for(let i=0;i<6;i++){
+  const rung=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.06,0.06),new THREE.MeshStandardMaterial({color:0x333333,metalness:0.6,roughness:0.4}));
+  rung.position.set(ventLadderPos.x,0.4+i*0.55,ventLadderPos.z);scene.add(rung);
+}
+const ventLadderLight=new THREE.PointLight(0xaad4ff,0.7,5,2);ventLadderLight.position.set(ventLadderPos.x,3.0,ventLadderPos.z);scene.add(ventLadderLight);
+
+const VX=-280,VZ=280,VENT_W=6,VENT_H=6,VENT_CELL=3,VENT_WALL_H=1.6;
+const ventCells=genMaze(VENT_W,VENT_H);
+const ventEntry={x:VX,z:VZ};
+const ventExitVentSide={x:VX+(VENT_W-1)*VENT_CELL,z:VZ+(VENT_H-1)*VENT_CELL};
+const ventExitMainPos=(()=>{const c=cellCenter(9,9);return {x:c.x,z:c.z};})();
+const ventWallTex=makeTex('#5a5850','rgba(15,15,10,A)',2);
+const ventFloorTex=makeTex('#4a4842','rgba(10,10,8,A)',VENT_W);
+const ventWallMat=new THREE.MeshStandardMaterial({map:ventWallTex,roughness:0.85,metalness:0.3});
+const ventFloor=new THREE.Mesh(new THREE.PlaneGeometry(VENT_W*VENT_CELL+VENT_CELL,VENT_H*VENT_CELL+VENT_CELL),new THREE.MeshStandardMaterial({map:ventFloorTex,roughness:1,metalness:0.2}));
+ventFloor.rotation.x=-Math.PI/2;ventFloor.position.set(VX+((VENT_W-1)*VENT_CELL)/2,0,VZ+((VENT_H-1)*VENT_CELL)/2);scene.add(ventFloor);
+const ventCeil=ventFloor.clone();ventCeil.material=new THREE.MeshStandardMaterial({color:0x2e2c28,roughness:1});ventCeil.position.y=VENT_WALL_H;ventCeil.rotation.x=Math.PI/2;scene.add(ventCeil);
+for(let vx=0;vx<VENT_W;vx++)for(let vy=0;vy<VENT_H;vy++){
+  const vc=ventCells[vx][vy],cx=VX+vx*VENT_CELL,cz=VZ+vy*VENT_CELL;
+  if(vc.N){const w=new THREE.Mesh(new THREE.BoxGeometry(VENT_CELL+0.3,VENT_WALL_H,0.25),ventWallMat);w.position.set(cx,VENT_WALL_H/2,cz-VENT_CELL/2);scene.add(w);wallBoxes.push({minX:cx-(VENT_CELL+0.3)/2,maxX:cx+(VENT_CELL+0.3)/2,minZ:cz-VENT_CELL/2-0.125,maxZ:cz-VENT_CELL/2+0.125});}
+  if(vc.W){const w=new THREE.Mesh(new THREE.BoxGeometry(0.25,VENT_WALL_H,VENT_CELL+0.3),ventWallMat);w.position.set(cx-VENT_CELL/2,VENT_WALL_H/2,cz);scene.add(w);wallBoxes.push({minX:cx-VENT_CELL/2-0.125,maxX:cx-VENT_CELL/2+0.125,minZ:cz-(VENT_CELL+0.3)/2,maxZ:cz+(VENT_CELL+0.3)/2});}
+  if(vx===VENT_W-1&&vc.E){const w=new THREE.Mesh(new THREE.BoxGeometry(0.25,VENT_WALL_H,VENT_CELL+0.3),ventWallMat);w.position.set(cx+VENT_CELL/2,VENT_WALL_H/2,cz);scene.add(w);wallBoxes.push({minX:cx+VENT_CELL/2-0.125,maxX:cx+VENT_CELL/2+0.125,minZ:cz-(VENT_CELL+0.3)/2,maxZ:cz+(VENT_CELL+0.3)/2});}
+  if(vy===VENT_H-1&&vc.S){const w=new THREE.Mesh(new THREE.BoxGeometry(VENT_CELL+0.3,VENT_WALL_H,0.25),ventWallMat);w.position.set(cx,VENT_WALL_H/2,cz+VENT_CELL/2);scene.add(w);wallBoxes.push({minX:cx-(VENT_CELL+0.3)/2,maxX:cx+(VENT_CELL+0.3)/2,minZ:cz+VENT_CELL/2-0.125,maxZ:cz+VENT_CELL/2+0.125});}
+}
+const ventLight1=new THREE.PointLight(0x8899aa,0.55,8,2);ventLight1.position.set(VX,1.2,VZ);scene.add(ventLight1);
+const ventLight2=new THREE.PointLight(0x8899aa,0.55,8,2);ventLight2.position.set(ventExitVentSide.x,1.2,ventExitVentSide.z);scene.add(ventLight2);
+const exitGrate=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.06,0.8),new THREE.MeshStandardMaterial({color:0x333333,metalness:0.7,roughness:0.3,emissive:0x224433,emissiveIntensity:0.4}));
+exitGrate.position.set(ventExitVentSide.x,0.04,ventExitVentSide.z);scene.add(exitGrate);
+const exitGrateLight=new THREE.PointLight(0x66ffaa,0.7,4,2);exitGrateLight.position.set(ventExitVentSide.x,0.8,ventExitVentSide.z);scene.add(exitGrateLight);
+
+function buildVentGraph(){
+  const adj={};
+  for(let x=0;x<VENT_W;x++)for(let y=0;y<VENT_H;y++){
+    const k=x+','+y;const c=ventCells[x][y];const list=[];
+    if(!c.N&&y>0)list.push([x,y-1]);
+    if(!c.S&&y<VENT_H-1)list.push([x,y+1]);
+    if(!c.E&&x<VENT_W-1)list.push([x+1,y]);
+    if(!c.W&&x>0)list.push([x-1,y]);
+    adj[k]=list;
+  }
+  return adj;
+}
+const ventGraph=buildVentGraph();
+function ventCellCenter(x,y){return {x:VX+x*VENT_CELL,z:VZ+y*VENT_CELL};}
+function ventCurCell(x,z){
+  let cx=Math.round((x-VX)/VENT_CELL),cz=Math.round((z-VZ)/VENT_CELL);
+  cx=Math.max(0,Math.min(VENT_W-1,cx));cz=Math.max(0,Math.min(VENT_H-1,cz));
+  return [cx,cz];
+}
+const ventBug={mesh:makeEntity(2),state:'wander',wanderTarget:null,wanderTimer:0,seenTimer:0,lastSeen:null};
+{const c=ventCellCenter(Math.floor(VENT_W/2),Math.floor(VENT_H/2));ventBug.mesh.position.set(c.x,0,c.z);}
+ventBug.mesh.scale.set(0.6,0.5,0.95);
+scene.add(ventBug.mesh);
+
 function tryInteract(){
   const dTD=Math.hypot(px-trapdoorPos.x,pz-trapdoorPos.z);
   if(dTD<2.2){
@@ -380,7 +463,13 @@ function tryInteract(){
     return;
   }
   const dL=Math.hypot(px-basementEntry.x,pz-basementEntry.z);
-  if(dL<2.8){px=trapdoorPos.x+0.3;pz=trapdoorPos.z;beep(160,0.35,0.18,'sawtooth');}
+  if(dL<2.8){px=trapdoorPos.x+0.3;pz=trapdoorPos.z;beep(160,0.35,0.18,'sawtooth');return;}
+  const dVL=Math.hypot(px-ventLadderPos.x,pz-ventLadderPos.z);
+  if(dVL<2.2){px=ventEntry.x;pz=ventEntry.z;beep(150,0.35,0.18,'sawtooth');return;}
+  const dVE=Math.hypot(px-ventEntry.x,pz-ventEntry.z);
+  if(dVE<2.0){px=ventLadderPos.x+0.3;pz=ventLadderPos.z;beep(150,0.35,0.18,'sawtooth');return;}
+  const dVX=Math.hypot(px-ventExitVentSide.x,pz-ventExitVentSide.z);
+  if(dVX<2.0){px=ventExitMainPos.x;pz=ventExitMainPos.z;beep(170,0.4,0.2,'sawtooth');return;}
 }
 
 // ---------- player spawns ----------
@@ -645,6 +734,7 @@ function respawn(){
   document.getElementById('caught').style.display='none';
   const crackEl=document.getElementById('crack');if(crackEl)crackEl.style.opacity='0';
   hasWeapon=false; viewGun.visible=false;
+  emptyHand.visible=true;
   const whudEl=document.getElementById('weaponHud'); if(whudEl) whudEl.style.display='none';
   if(!weaponPickupMesh){
     weaponPickupMesh=makeWeaponPickup();
@@ -696,7 +786,9 @@ function animate(){
     if(!collide(px,pz+dz)) pz+=dz;
     if(moving){ bobPhase += dt*(sprinting?14:8); } 
     const bobY = moving ? Math.sin(bobPhase)*(sprinting?0.09:0.045) : 0;
-    camera.position.set(px,PL_H+bobY,pz);
+    const crouching = keys['ControlLeft']||keys['ControlRight'];
+    const curPLH = crouching ? PL_H*0.55 : PL_H;
+    camera.position.set(px,curPLH+bobY,pz);
 
     if(moving){stepTimer-=dt;if(stepTimer<=0){footstep(sprinting);stepTimer=sprinting?0.24:0.38;}}
     dripTimer-=dt; if(dripTimer<=0){ drip(); dripTimer=3+Math.random()*5; }
@@ -707,6 +799,7 @@ function animate(){
       if(Math.hypot(weaponPickupMesh.position.x-px,weaponPickupMesh.position.z-pz)<1.0){
         hasWeapon=true; scene.remove(weaponPickupMesh); weaponPickupMesh=null;
         viewGun.visible=true;
+        emptyHand.visible=false;
         beep(700,0.15,0.2,'sine'); beep(1000,0.15,0.2,'sine');
       }
     }
@@ -795,6 +888,35 @@ function animate(){
       }
       if(distToPlayer<nearest) nearest=distToPlayer;
       if(distToPlayer<1.15 && !inSafe) triggerCaught();
+    }
+    {
+      const bex=ventBug.mesh.position.x, bez=ventBug.mesh.position.z;
+      const bDist=Math.hypot(bex-px,bez-pz);
+      const bCanSee = bDist<DETECT_RANGE && hasLOS(bex,bez,px,pz);
+      if(bCanSee){ ventBug.state='chase'; ventBug.seenTimer=1.4; ventBug.lastSeen={x:px,z:pz}; }
+      else if(ventBug.seenTimer>0){ ventBug.seenTimer-=dt; ventBug.state='chase'; }
+      else ventBug.state='wander';
+      let btx,btz;
+      if(ventBug.state==='chase'){ const tgt=bCanSee?{x:px,z:pz}:ventBug.lastSeen; btx=tgt.x; btz=tgt.z; }
+      else{
+        ventBug.wanderTimer-=dt;
+        if(!ventBug.wanderTarget || ventBug.wanderTimer<=0 || Math.hypot(ventBug.wanderTarget.x-bex,ventBug.wanderTarget.z-bez)<0.6){
+          const [bgx,bgz]=ventCurCell(bex,bez);
+          const bnbrs=ventGraph[bgx+','+bgz]||[];
+          if(bnbrs.length){ const pick=bnbrs[Math.floor(Math.random()*bnbrs.length)]; const c=ventCellCenter(pick[0],pick[1]); ventBug.wanderTarget={x:c.x+(Math.random()-0.5)*1.1,z:c.z+(Math.random()-0.5)*1.1}; }
+          ventBug.wanderTimer=1.5+Math.random()*2.5;
+        }
+        if(ventBug.wanderTarget){btx=ventBug.wanderTarget.x;btz=ventBug.wanderTarget.z;}else{btx=bex;btz=bez;}
+      }
+      const bddx=btx-bex, bddz=btz-bez, bd=Math.hypot(bddx,bddz);
+      if(bd>0.05){
+        const bspd=(ventBug.state==='chase'?ENT_SPEED_CHASE:ENT_SPEED_WANDER)*dt;
+        const bnx=bex+bddx/bd*bspd, bnz=bez+bddz/bd*bspd;
+        if(!collide(bnx,bez)) ventBug.mesh.position.x=bnx;
+        if(!collide(ventBug.mesh.position.x,bnz)) ventBug.mesh.position.z=bnz;
+        ventBug.mesh.rotation.y=Math.atan2(bddx,bddz);
+      }
+      if(bDist<1.15) triggerCaught();
     }
     if(seenByAny && !inSafe){ sanity=Math.max(0,sanity-SANITY_DRAIN*dt); }
     const sanFill=document.getElementById('sanFill'); if(sanFill) sanFill.style.width=(sanity/maxSanity*100)+'%';
